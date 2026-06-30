@@ -1,0 +1,43 @@
+{
+  "title": "Worker",
+  "description": "Worker workflows, profile management, and dashboard capabilities in Rozgar Connect",
+  "features": [
+    {
+      "name": "Profile Creation",
+      "description": "Upon switching to or registering as a worker, the user must set up their worker details. This includes choosing their categories of expertise, their location (city, area), contact numbers, and uploading credentials."
+    },
+    {
+      "name": "Profile Updates",
+      "description": "Workers can edit their services, location, description, or update profile/ID images at any time through their profile management interface."
+    },
+    {
+      "name": "Real-time Messaging",
+      "description": "Workers receive customer messages directly. They have access to a personal chat interface to manage conversations, see online users, and reply to customers instantly."
+    },
+    {
+      "name": "Reputation & Feedback",
+      "description": "Workers can see their public reputation through their aggregate star rating and individual review feedback left by their clients."
+    }
+  ],
+  "verification_lifecycle": {
+    "states": {
+      "unverified": "The initial state of a newly created worker profile if front and back ID cards have not been uploaded.",
+      "pending": "The status is transitioned to 'pending' as soon as both 'idCardFront' and 'idCardBack' images are uploaded (either during profile creation or update). This signals admins to review the profile.",
+      "verified": "The admin has reviewed the ID documents and marked the worker profile as verified. This displays a verification badge on the worker's card in search results.",
+      "rejected": "The admin has rejected the verification documents (e.g. invalid/unclear images). The worker must re-upload valid documents to trigger a transition back to pending."
+    }
+  },
+  "upload_rules": {
+    "size_limit": "5MB per image file",
+    "allowed_formats": ["JPEG", "JPG", "PNG", "WEBP"],
+    "supported_fields": [
+      { "field": "photo", "description": "Profile picture of the worker" },
+      { "field": "idCardFront", "description": "Front face image of national identity card for verification" },
+      { "field": "idCardBack", "description": "Back face image of national identity card for verification" }
+    ]
+  },
+  "notes": [
+    "A worker's user account must remain active (isActive: true) to appear in search results.",
+    "Updating profile details (except ID cards) does not reset a previously 'verified' status, but editing/re-uploading ID cards when the state is not verified resets it to 'pending'."
+  ]
+}

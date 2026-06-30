@@ -1,0 +1,90 @@
+{
+  "title": "Chat System",
+  "description": "Real-time chat infrastructure and API endpoints in Rozgar Connect",
+  "technology": "Socket.IO for real-time bi-directional events, Express/Mongoose for HTTP endpoints and database storage",
+  "http_endpoints": [
+    {
+      "url": "/api/v1/chat/conversations",
+      "method": "GET",
+      "description": "Retrieve all chat conversations for the logged-in user. Includes participants populated with names, and the last message details."
+    },
+    {
+      "url": "/api/v1/chat/conversations",
+      "method": "POST",
+      "body": { "recipientId": "MongoId string of the recipient user" },
+      "description": "Initialize a new conversation with a worker or customer. If a conversation already exists, retrieves it."
+    },
+    {
+      "url": "/api/v1/chat/messages/:conversationId",
+      "method": "GET",
+      "description": "Retrieve all past messages for a specific conversation ID. Ordered chronologically."
+    }
+  ],
+  "socket_handshake_auth": {
+    "token_location": "socket.handshake.auth.token or socket.handshake.query.token",
+    "verification": "Uses verifyAccessToken. If token is missing, expired, or invalid, connection is rejected with an Authentication error."
+  },
+  "socket_rooms": {
+    "personal_room": "user_<userId> - joined automatically upon connecting. Used for user-specific real-time notifications like conversation updates.",
+    "conversation_room": "conversation_<conversationId> - joined when a user opens a specific chat window. Allows messages and typing indicators to stay isolated to that chat."
+  },
+  "socket_events": {
+    "incoming_events_from_client": [
+      {
+        "event": "joinConversation",
+        "data": "conversationId",
+        "action": "Socket joins 'conversation_<conversationId>' room."
+      },
+      {
+        "event": "leaveConversation",
+        "data": "conversationId",
+        "action": "Socket leaves 'conversation_<conversationId>' room."
+      },
+      {
+        "event": "typing",
+        "data": "{ conversationId }",
+        "action": "Broadcasts 'userTyping' with typing: true to all sockets in 'conversation_<conversationId>' except the sender."
+      },
+      {
+        "event": "stopTyping",
+        "data": "{ conversationId }",
+        "action": "Broadcasts 'userTyping' with typing: false to all sockets in 'conversation_<conversationId>' except the sender."
+      },
+      {
+        "event": "sendMessage",
+        "data": "{ conversationId, content, recipientId }",
+        "action": "1) Saves message to Database. 2) Updates the Conversation's lastMessage reference. 3) Broadcasts populated message via 'newMessage' to conversation room. 4) Emits 'newConversationUpdate' to recipient's personal room. 5) Emits 'messageSent' back to the sender."
+      }
+    ],
+    "outgoing_events_to_client": [
+      {
+        "event": "onlineUsersList",
+        "data": "Array of active online User IDs",
+        "description": "Broadcasted to all connected sockets whenever any user connects or disconnects."
+      },
+      {
+        "event": "userTyping",
+        "data": "{ conversationId, userId, typing: boolean }",
+        "description": "Notifies the other participant in the room that a user has started or stopped typing."
+      },
+      {
+        "event": "newMessage",
+        "data": "Message object",
+        "description": "Sent to all active participants inside the specific conversation room."
+      },
+      {
+        "event": "newConversationUpdate",
+        "data": "{ conversationId, lastMessage }",
+        "description": "Sent directly to the recipient's personal room to trigger sidebar/active conversation list refresh in real-time."
+      },
+      {
+        "event": "messageSent",
+        "data": "Message object",
+        "description": "Sent back to the sender confirming successful save and distribution."
+      }
+    ]
+  },
+  "notes": [
+    "Users' online status is maintained in a Map (userId -> Set of socketIds) to handle multiple active sessions (e.g. laptop and phone) for a single user cleanly."
+  ]
+}

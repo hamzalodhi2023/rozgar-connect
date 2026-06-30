@@ -1,0 +1,34 @@
+{
+  "title": "Admin Moderation System",
+  "description": "Administrative endpoints, user controls, worker verifications, review moderations, and category management in Rozgar Connect",
+  "permissions": "All admin endpoints are protected by requireAuth and requireRoles('admin') middleware gates.",
+  "endpoints": {
+    "dashboard": [
+      { "url": "/api/v1/admin/stats", "method": "GET", "description": "Fetches aggregate marketplace statistics (total users, total workers, verified/pending workers count, total reviews)." }
+    ],
+    "user_management": [
+      { "url": "/api/v1/admin/users", "method": "GET", "description": "Retrieve list of all registered users." },
+      { "url": "/api/v1/admin/users/:id", "method": "DELETE", "description": "Permanently deletes a user account from the database." },
+      { "url": "/api/v1/admin/users/:id/toggle-status", "method": "PUT", "description": "Toggles 'isActive' true/false. Deactivating an account immediately blocks the user's login and session refreshing capabilities, and hides their profile from search." }
+    ],
+    "worker_management": [
+      { "url": "/api/v1/admin/workers", "method": "GET", "description": "Retrieve list of all worker profiles (along with verification card paths)." },
+      { "url": "/api/v1/admin/workers/:id", "method": "DELETE", "description": "Permanently deletes a worker's profile document." },
+      { "url": "/api/v1/admin/workers/:id/verify", "method": "PUT", "description": "Approves a worker. Sets verificationStatus to 'verified' and isVerified to true, displaying the verification checkmark badge publicly." },
+      { "url": "/api/v1/admin/workers/:id/reject", "method": "PUT", "description": "Rejects verification details. Sets verificationStatus to 'rejected' and isVerified to false." }
+    ],
+    "review_moderation": [
+      { "url": "/api/v1/admin/reviews", "method": "GET", "description": "List all customer reviews." },
+      { "url": "/api/v1/admin/reviews/:id", "method": "DELETE", "description": "Deletes a review comment (triggers rating recalculation)." },
+      { "url": "/api/v1/admin/reviews/:id", "method": "PUT", "description": "Modifies a review's rating or comment (triggers rating recalculation)." }
+    ],
+    "category_management": [
+      { "url": "/api/v1/admin/categories", "method": "POST", "body": { "name": "string", "label": "string", "iconName": "string", "iconColor": "string" }, "description": "Adds a new custom service category." },
+      { "url": "/api/v1/admin/categories/:id", "method": "PUT", "description": "Updates details (name, label, icons) of an existing work category." },
+      { "url": "/api/v1/admin/categories/:id", "method": "DELETE", "description": "Deletes a category from the database." }
+    ]
+  },
+  "notes": [
+    "A seed route '/api/v1/admin/seed' (POST) is available for developers to automatically register a default admin account during project setup."
+  ]
+}

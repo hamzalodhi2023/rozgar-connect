@@ -1,0 +1,37 @@
+{
+  "title": "Search System",
+  "description": "Mechanics and endpoints of the worker search engine in Rozgar Connect",
+  "endpoint": {
+    "url": "/api/v1/workers/search",
+    "method": "GET",
+    "parameters": {
+      "category": { "type": "string", "description": "Filter workers matching this service category (exact match, case insensitive)" },
+      "city": { "type": "string", "description": "Filter workers located in this city (exact match, case insensitive)" },
+      "area": { "type": "string", "description": "Filter workers operating in this specific area/neighborhood (exact match, case insensitive)" },
+      "sortBy": { "type": "string", "enum": ["newest", "highestRating", "mostReviews"], "default": "newest", "description": "Specifies sorting precedence for results" }
+    }
+  },
+  "search_logic": [
+    "1. Read query parameters category, city, area, sortBy.",
+    "2. Standardize string parameters by trimming white spaces and converting to lowercase.",
+    "3. Compile the MongoDB query object. Exclude any empty filters.",
+    "4. Query the User collection to fetch all active users (isActive: true). Extract their ObjectIds.",
+    "5. Add active users filter to query: only show worker profiles belonging to these active user IDs.",
+    "6. Apply sorting based on sortBy parameter.",
+    "7. Execute the query on the WorkerProfile collection, populating the 'userId' field to return the worker's name and email."
+  ],
+  "default_categories": [
+    { "name": "plumber", "label": "Plumbing" },
+    { "name": "electrician", "label": "Electrical" },
+    { "name": "carpenter", "label": "Carpentry" },
+    { "name": "painter", "label": "Painting" },
+    { "name": "ac technician", "label": "AC Service" },
+    { "name": "mechanic", "label": "Mechanical" },
+    { "name": "gardener", "label": "Gardening" },
+    { "name": "cleaner", "label": "Cleaning" }
+  ],
+  "notes": [
+    "The search parameters are mapped dynamically. If a parameter is not provided, the filter is completely bypassed.",
+    "If the database seed categories differ from defaults, the frontend fetches registered categories dynamically from '/api/v1/categories' and falls back to defaults if the API call fails."
+  ]
+}

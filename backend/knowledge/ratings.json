@@ -1,0 +1,22 @@
+{
+  "title": "Ratings System",
+  "description": "Rating calculations, validation, and database trigger triggers in Rozgar Connect",
+  "score_range": {
+    "minimum": 1,
+    "maximum": 5,
+    "type": "Integer",
+    "description": "Customers must provide a rating between 1 and 5 stars when submitting a review."
+  },
+  "aggregation_logic": {
+    "averageRating": "Calculated by averaging all rating numbers submitted for a specific worker: averageRating = sum(ratings) / total_reviews. The score is rounded to the nearest single decimal (e.g. 4.3) using Math.round(avg * 10) / 10. Default value is 0.",
+    "reviewCount": "Calculated by summing the total number of reviews written for the worker: reviewCount = count(reviews). Default value is 0."
+  },
+  "database_triggers": {
+    "event": "reviewSchema.post('save')",
+    "action": "Executes reviewSchema.statics.calculateAverageRating which performs a MongoDB aggregation group match on the workerId. Calculates the average score and count, then updates the corresponding WorkerProfile document with the new averageRating and reviewCount.",
+    "delete_behavior": "When reviews are deleted or modified, ratings are recalculated to ensure accuracy."
+  },
+  "notes": [
+    "Average ratings are indexed in descending order (averageRating: -1) in the database for optimal search sorting performance."
+  ]
+}

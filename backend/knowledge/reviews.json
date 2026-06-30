@@ -1,0 +1,32 @@
+{
+  "title": "Reviews System",
+  "description": "Customer feedback, review schemas, and endpoint details in Rozgar Connect",
+  "endpoints": [
+    {
+      "url": "/api/v1/reviews/worker/:workerId",
+      "method": "GET",
+      "description": "Fetch all public reviews written for a specific worker. Results contain customer name and avatar details, along with rating and comment text."
+    },
+    {
+      "url": "/api/v1/reviews",
+      "method": "POST",
+      "body": {
+        "workerId": "Valid MongoDB ObjectId of the worker profile",
+        "rating": "Integer between 1 and 5",
+        "comment": "Non-empty text string containing review content"
+      },
+      "headers": "Requires Bearer Access Token in Authorization header",
+      "description": "Allows logged-in customers to submit feedback. Triggers average rating recalculation upon successful creation."
+    }
+  ],
+  "constraints": {
+    "one_review_limit": {
+      "type": "Compound unique index",
+      "fields": "{ workerId: 1, customerId: 1 }",
+      "explanation": "Enforces that a single customer account can only leave a maximum of one review per worker. Any attempt to write a duplicate review results in a database duplicate key error."
+    }
+  },
+  "review_visibility": {
+    "public": "All reviews and ratings are fully public. They can be read by anyone searching and viewing worker profile pages (no authentication required to view reviews)."
+  }
+}

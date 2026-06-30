@@ -1,0 +1,49 @@
+{
+  "title": "Registration",
+  "description": "User registration system of Rozgar Connect",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "validation": "Must be trimmed and non-empty"
+    },
+    {
+      "name": "email",
+      "type": "string",
+      "required": true,
+      "validation": "Must be a valid and unique email address format, saved in lowercase"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "required": true,
+      "validation": "Must be at least 6 characters long"
+    },
+    {
+      "name": "role",
+      "type": "string",
+      "required": false,
+      "default": "customer",
+      "allowed_values": ["customer", "worker"]
+    }
+  ],
+  "flows": {
+    "customer": {
+      "roles_assigned": ["customer"],
+      "database_actions": "A new User document is created in the database. Password is automatically hashed using bcrypt with salt 12.",
+      "session_generation": "An Access Token and Refresh Token are generated for the session. The Refresh Token is saved to the User document and sent as an HTTP-only cookie to the client.",
+      "client_response": "Returns the registered user object, access token, and logs the user directly into the customer home dashboard."
+    },
+    "worker": {
+      "roles_assigned": ["worker", "customer"],
+      "explanation": "Workers are automatically granted the 'customer' role so they can browse other services and perform customer-specific workflows without creating a separate account.",
+      "database_actions": "A new User document is created with roles 'worker' and 'customer'. Password is encrypted via bcrypt.",
+      "session_generation": "An Access Token and Refresh Token are generated and saved.",
+      "client_response": "Returns user object, access token, and a flag 'redirectToSetup: true'. This instructs the frontend to redirect the worker immediately to the Worker Profile Setup page ('/worker-setup') to complete their registration."
+    }
+  },
+  "notes": [
+    "Database validations are implemented using Express Validator on the API route and Mongoose schema level."
+  ]
+}

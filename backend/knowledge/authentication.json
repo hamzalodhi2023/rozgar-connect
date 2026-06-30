@@ -1,0 +1,45 @@
+{
+  "title": "Authentication",
+  "description": "Authentication system architecture of Rozgar Connect",
+  "features": [
+    "JWT (JSON Web Token) based user session authentication",
+    "Dual-token system consisting of a short-lived Access Token and a long-lived Refresh Token",
+    "Secure cookie storage for the Refresh Token to prevent client-side XSS access",
+    "Axios-based frontend interceptors to manage token attaching and automatic transparent sessions refresh",
+    "Route-level role authorization gates based on JWT decoded claims"
+  ],
+  "tokens": {
+    "accessToken": {
+      "type": "JWT",
+      "stored_in": "Frontend memory (Redux state, authSlice)",
+      "lifetime": "15 minutes (configurable via JWT_ACCESS_EXPIRY in backend .env)",
+      "contents": "Decoded user ID, name, email, and array of roles",
+      "usage": "Sent in the Authorization header as Bearer token for api requests"
+    },
+    "refreshToken": {
+      "type": "JWT",
+      "stored_in": "HTTP-Only secure cookie",
+      "lifetime": "7 days (configurable via JWT_REFRESH_EXPIRY in backend .env)",
+      "usage": "Used exclusively to query /api/v1/auth/refresh to fetch a new access token"
+    }
+  },
+  "cookie_options": {
+    "httpOnly": true,
+    "secure": false,
+    "sameSite": "lax",
+    "path": "/",
+    "maxAge": 604800000
+  },
+  "axios_interceptors": {
+    "request": "Intercepts all outgoing HTTP requests, retrieves the current access token from Redux memory, and sets it in the 'Authorization: Bearer <token>' header if it exists.",
+    "response": "Intercepts incoming responses. If a request fails with a 401 Unauthorized status and is not a login/register/refresh request itself, it triggers a token refresh: 1) If a refresh is already in progress, it queues subsequent requests. 2) Performs a POST request to '/auth/refresh' to obtain a new access token. 3) Stores the new access token in Redux. 4) Retries all queued requests. 5) If refresh fails (token expired/invalid), it clears cookies and logs the user out."
+  },
+  "unimplemented_features": [
+    "Forgot Password is not currently implemented in this version of the application",
+    "Reset Password is not currently implemented in this version of the application"
+  ],
+  "notes": [
+    "The secure flag on cookie options is set to false in development mode to allow local network IP/WiFi testing and cross-device browser operations.",
+    "The refresh token is automatically matched against the token saved in the database for that user to ensure session validity and prevent token reuse/replay attacks."
+  ]
+}

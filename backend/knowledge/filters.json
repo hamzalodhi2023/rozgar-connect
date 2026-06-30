@@ -1,0 +1,43 @@
+{
+  "title": "Search Filters",
+  "description": "User interface filters and sorting controls on the worker search screen in Rozgar Connect",
+  "filters": [
+    {
+      "name": "Category Filter",
+      "ui_element": "Select Dropdown",
+      "parameter": "category",
+      "options": "All Services (empty string) or any specific category like plumber, electrician, carpenter, etc.",
+      "description": "Filters workers by their skillset. The list of categories is loaded dynamically from the backend categories database endpoint. Defaults are used as a fallback if the API is unreachable."
+    },
+    {
+      "name": "City Filter",
+      "ui_element": "Text Input",
+      "parameter": "city",
+      "placeholder": "e.g. Islamabad",
+      "description": "Filters workers by the city they serve. Standardizes input by trimming and converting to lowercase internally when matching."
+    },
+    {
+      "name": "Area Filter",
+      "ui_element": "Text Input (Advanced drawer)",
+      "parameter": "area",
+      "placeholder": "e.g. Blue Area",
+      "description": "Filters workers by their neighborhood or zone within the city. Accessed by clicking the 'Filters' toggle button to open the advanced drawer."
+    },
+    {
+      "name": "Sort By Filter",
+      "ui_element": "Select Dropdown (Advanced drawer)",
+      "parameter": "sortBy",
+      "options": [
+        { "value": "newest", "label": "Newest Workers" },
+        { "value": "highestRating", "label": "Highest Rating" },
+        { "value": "mostReviews", "label": "Most Reviews" }
+      ],
+      "default": "newest",
+      "description": "Controls the order of the search results. Newest sorts by profile creation date descending; Highest Rating sorts by worker's averageRating descending; Most Reviews sorts by worker's reviewCount descending."
+    }
+  ],
+  "actions": {
+    "search": "Submits the search form, executing the API call with all defined query params. Triggered by clicking 'Search' or changing core dropdown values.",
+    "reset": "Resets category, city, area variables to empty strings and sortBy to 'newest'. Triggers a fresh search fetching all workers on the local network."
+  }
+}

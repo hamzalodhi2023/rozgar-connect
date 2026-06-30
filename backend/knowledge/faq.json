@@ -1,0 +1,156 @@
+{
+  "title": "Frequently Asked Questions (FAQ)",
+  "description": "Comprehensive list of 30 common questions and answers about the Rozgar Connect marketplace platform",
+  "faqs": [
+    {
+      "id": 1,
+      "question": "How do I sign up for an account on Rozgar Connect?",
+      "answer": "Go to the registration page, enter your Full Name, Email, and Password (minimum 6 characters), select your role (Customer or Worker), and submit the form. If you register as a Worker, you will be redirected to complete your profile setup."
+    },
+    {
+      "id": 2,
+      "question": "Can I sign up as a Customer first and switch to a Worker later?",
+      "answer": "Yes, absolutely! Log in, click on your profile name in the navigation bar, and select 'Become a Worker'. Confirm the prompt to add the worker role, and you will be immediately redirected to the profile setup page to input your services."
+    },
+    {
+      "id": 3,
+      "question": "What is the difference between a Customer and a Worker role?",
+      "answer": "Customers can search for services, view worker profiles, start chat conversations, and leave ratings and reviews. Workers can do all customer actions and also set up a service profile, receive client messages, and manage their business from the worker dashboard."
+    },
+    {
+      "id": 4,
+      "question": "If I am registered as a Worker, do I need a separate Customer account?",
+      "answer": "No. Workers are automatically assigned both 'worker' and 'customer' roles in the system. This allows them to seek and book other services without logging out or registering another account."
+    },
+    {
+      "id": 5,
+      "question": "How do I search for a plumber in my city?",
+      "answer": "On the 'Find Workers' page, choose 'Plumbing' from the service category dropdown, type the name of your city (e.g. Lahore or Islamabad) into the City input field, and click 'Search'."
+    },
+    {
+      "id": 6,
+      "question": "What are the search sorting options?",
+      "answer": "Under the advanced filters drawer, you can sort search results by: 1) Newest Workers (profiles created recently), 2) Highest Rating (workers with top average star counts), and 3) Most Reviews (workers with the highest volume of client feedback)."
+    },
+    {
+      "id": 7,
+      "question": "How do I filter workers by specific neighborhoods?",
+      "answer": "Click the 'Filters' button on the search bar to toggle the advanced options drawer. Type your neighborhood name (e.g. Blue Area or Model Town) into the 'Area/Neighborhood' field and click Search."
+    },
+    {
+      "id": 8,
+      "question": "Is the search case-sensitive?",
+      "answer": "No. The search engine automatically normalizes all parameters (category, city, and area) by trimming whitespace and converting letters to lowercase before matching against worker records."
+    },
+    {
+      "id": 9,
+      "question": "How do I contact a worker for hiring?",
+      "answer": "Click on the worker's profile in the search list to view their detailed card. Click the 'Chat Now' button to start a conversation, or copy their Phone or WhatsApp number listed on their profile."
+    },
+    {
+      "id": 10,
+      "question": "Is the messaging system real-time?",
+      "answer": "Yes. Rozgar Connect uses Socket.IO. When you send a message, it is instantly delivered to the recipient if they are online, and you will see a green online status indicator next to their name."
+    },
+    {
+      "id": 11,
+      "question": "Can I see if a worker is currently typing a response?",
+      "answer": "Yes. When you are inside an active chat window and the other user starts typing in their input field, a typing indicator ('User is typing...') will be displayed in real-time."
+    },
+    {
+      "id": 12,
+      "question": "How do I write a review for a worker?",
+      "answer": "Open the worker's profile page, scroll down to the reviews section, click write review, pick a rating between 1 and 5 stars, write your comment, and submit. You must be logged in to leave a review."
+    },
+    {
+      "id": 13,
+      "question": "Can I review a worker multiple times if they do multiple jobs for me?",
+      "answer": "No. The database has a compound restriction that limits each customer to exactly one review per worker profile. If you submit another review, the system will block the duplicate."
+    },
+    {
+      "id": 14,
+      "question": "How are average star ratings calculated for workers?",
+      "answer": "Whenever a new review is submitted or deleted, the system runs a database trigger that calculates the average score (sum of ratings divided by review count) and rounds it to the nearest single decimal (e.g. 4.8). This score is saved on the worker's profile."
+    },
+    {
+      "id": 15,
+      "question": "How do I get the 'Verified Worker' checkmark badge?",
+      "answer": "Go to your Worker Profile page, edit profile, and upload clear photos of your National Identity Card Front and Back. Once uploaded, your status becomes 'pending'. An admin will review the documents and approve your verification badge."
+    },
+    {
+      "id": 16,
+      "question": "What files can I upload for my profile picture and ID cards?",
+      "answer": "You can upload JPEG, JPG, PNG, and WEBP image file formats. The maximum file size limit is 5MB per upload."
+    },
+    {
+      "id": 17,
+      "question": "Why does my profile verification status say 'pending'?",
+      "answer": "Pending means you successfully uploaded both front and back images of your ID card, and the profile is queued in the admin dashboard waiting for an administrator to review and verify your identity."
+    },
+    {
+      "id": 18,
+      "question": "Can I change my services and contact details after registering as a worker?",
+      "answer": "Yes. You can update your category selections, city, operating area, phone, WhatsApp number, and service description at any time from your Worker Profile dashboard."
+    },
+    {
+      "id": 19,
+      "question": "How do I reset or recover my password if I forget it?",
+      "answer": "Password recovery and forgot/reset password features are not currently implemented in this version of the project. Please contact system administrators if you need assistance recovering access."
+    },
+    {
+      "id": 20,
+      "question": "Why did my search results page say 'No workers found'?",
+      "answer": "This could mean: 1) There are no registered workers matching your category, city, or area combination, or 2) The registered workers in that region have deactivated user accounts."
+    },
+    {
+      "id": 21,
+      "question": "How does the system keep me logged in securely?",
+      "answer": "We use a dual-token JWT authentication architecture. A short-lived Access Token is kept in the browser's memory, and a secure HTTP-Only Refresh Token is stored as a cookie, which automatically retrieves a fresh access token when the old one expires."
+    },
+    {
+      "id": 22,
+      "question": "What happens if a user's account is deactivated by an admin?",
+      "answer": "The user is blocked from logging in, their refresh token is deleted, they cannot generate new session tokens, and their profile is automatically hidden from all search results."
+    },
+    {
+      "id": 23,
+      "question": "What is the role of an Administrator in Rozgar Connect?",
+      "answer": "Admins oversee the platform. They moderate user accounts, approve or reject worker verifications, delete inappropriate customer reviews, and manage the list of service categories available on the platform."
+    },
+    {
+      "id": 24,
+      "question": "Can workers delete reviews they do not like?",
+      "answer": "No. Workers cannot delete customer reviews. If a review is offensive or fraudulent, the worker can report it to a system Administrator, who has review deletion and update privileges."
+    },
+    {
+      "id": 25,
+      "question": "Where does the platform store uploaded photos and documents?",
+      "answer": "All photos, profile pictures, and verification cards are stored on the server inside the '/uploads' directory and served statically through secure path URLs."
+    },
+    {
+      "id": 26,
+      "question": "Can I select multiple categories for my worker profile?",
+      "answer": "Yes. The worker profile model supports storing multiple categories in an array, allowing you to list yourself under multiple service types (e.g. both Electrician and AC Technician)."
+    },
+    {
+      "id": 27,
+      "question": "Why does my chat window say 'Connection Error'?",
+      "answer": "Make sure you are logged in and connected to the internet. If your session expires or your token becomes invalid, the Socket.IO server will reject your handshake connection."
+    },
+    {
+      "id": 28,
+      "question": "What happens if I edit my profile photo? Does it affect my verification status?",
+      "answer": "No. Editing your profile photo or updating descriptions does not reset your verification. However, if you upload new ID verification cards, your status will change back to 'pending' if it was not already 'verified'."
+    },
+    {
+      "id": 29,
+      "question": "Can admins add custom service categories?",
+      "answer": "Yes. Admins can create new custom categories (e.g. Tailor, Welder) through the admin dashboard. Newly created categories will immediately appear in search and registration filters."
+    },
+    {
+      "id": 30,
+      "question": "What should I do if my worker verification request is rejected?",
+      "answer": "If rejected, check your dashboard or contact support. Rejection usually happens due to blurry or invalid ID card uploads. Re-upload clear images to automatically resubmit your profile to 'pending' state."
+    }
+  ]
+}

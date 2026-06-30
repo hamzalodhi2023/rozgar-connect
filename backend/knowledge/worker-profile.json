@@ -1,0 +1,97 @@
+{
+  "title": "Worker Profile Schema",
+  "description": "Database schema and field details of worker profiles in Rozgar Connect",
+  "fields": {
+    "userId": {
+      "type": "ObjectId",
+      "reference": "User",
+      "required": true,
+      "unique": true,
+      "description": "Links the profile to the main User document"
+    },
+    "categories": {
+      "type": "Array of Strings",
+      "required": true,
+      "validation": "Must contain at least 1 category name; values are trimmed and stored in lowercase",
+      "description": "The types of services the worker offers (e.g. ['plumber', 'electrician'])"
+    },
+    "city": {
+      "type": "String",
+      "required": true,
+      "validation": "Trimmed and stored in lowercase",
+      "description": "The city where the worker operates"
+    },
+    "area": {
+      "type": "String",
+      "required": true,
+      "validation": "Trimmed and stored in lowercase",
+      "description": "The specific neighborhood or area within the city"
+    },
+    "phone": {
+      "type": "String",
+      "required": true,
+      "description": "Contact phone number"
+    },
+    "whatsapp": {
+      "type": "String",
+      "required": true,
+      "description": "WhatsApp contact number for instant customer messaging links"
+    },
+    "description": {
+      "type": "String",
+      "required": true,
+      "description": "A description of the worker's experience, tools, and services offered"
+    },
+    "photo": {
+      "type": "String",
+      "default": "",
+      "description": "Web path to the uploaded profile photo file (/uploads/photo-...)"
+    },
+    "idCardFront": {
+      "type": "String",
+      "default": "",
+      "description": "Web path to the uploaded ID card front image"
+    },
+    "idCardBack": {
+      "type": "String",
+      "default": "",
+      "description": "Web path to the uploaded ID card back image"
+    },
+    "isVerified": {
+      "type": "Boolean",
+      "default": false,
+      "description": "Flag showing whether the worker's identity is verified by admin"
+    },
+    "verificationStatus": {
+      "type": "String",
+      "enum": ["unverified", "pending", "verified", "rejected"],
+      "default": "unverified",
+      "description": "The current stage of the worker's verification review lifecycle"
+    },
+    "averageRating": {
+      "type": "Number",
+      "default": 0,
+      "min": 0,
+      "max": 5,
+      "description": "Weighted average rating from all reviews, rounded to the nearest decimal (1 place)"
+    },
+    "reviewCount": {
+      "type": "Number",
+      "default": 0,
+      "description": "The total count of reviews written for this worker profile"
+    }
+  },
+  "database_indexes": [
+    {
+      "fields": { "categories": 1, "city": 1, "area": 1 },
+      "purpose": "Optimizes queries filtering workers by service categories and locations"
+    },
+    {
+      "fields": { "averageRating": -1 },
+      "purpose": "Optimizes sorting workers by rating in descending order"
+    }
+  ],
+  "notes": [
+    "Schema timestamps: true automatically adds createdAt and updatedAt fields to the profile document."
+  ]
+}

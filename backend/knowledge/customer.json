@@ -1,0 +1,38 @@
+{
+  "title": "Customer",
+  "description": "Customer functionalities and workflows in Rozgar Connect",
+  "features": [
+    {
+      "name": "Searching Workers",
+      "description": "Customers can search for skilled workers by applying combinations of category, city, and area filters. Results are sorted based on preference (newest, highest rated, most reviewed)."
+    },
+    {
+      "name": "Viewing Worker Profiles",
+      "description": "Customers can click on worker profiles to see details: photo, description, verification badge, phone, WhatsApp number, average rating score, total review count, and a list of customer reviews/comments."
+    },
+    {
+      "name": "Internal Chat",
+      "description": "Allows direct messaging between the customer and worker in real-time. Customers can click 'Chat Now' on a worker's profile to open a chat interface, send messages, and see when the worker is typing or online."
+    },
+    {
+      "name": "Ratings & Reviews",
+      "description": "Customers who hire workers can review them. They choose a rating from 1 to 5 stars and write a comments text. A customer is limited to exactly one review per worker profile."
+    },
+    {
+      "name": "Switching to Worker Role",
+      "description": "If a customer wishes to offer their own services, they can upgrade their profile. This triggers a role addition request that appends 'worker' to their database user roles."
+    }
+  ],
+  "switching_role_flow": {
+    "action": "Click 'Become a Worker' in the user profile navigation dropdown.",
+    "endpoint": "/api/v1/users/become-worker",
+    "method": "POST",
+    "headers": "Requires Bearer Access Token in Authorization header",
+    "database_actions": "Appends 'worker' to the user's Mongoose 'roles' array, saving the updated document.",
+    "session_update": "Generates a new access token containing the updated roles claims and returns it to the client.",
+    "frontend_handling": "The frontend receives the new access token, updates the Redux store (loginSuccess / updateUser), and redirects the user to the Worker Profile Setup page ('/worker-setup') to define their services."
+  },
+  "notes": [
+    "Customers cannot access worker dashboard routes or admin routes unless they possess those specific roles."
+  ]
+}
