@@ -1,0 +1,89 @@
+name: PR Auto Testing
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # ==========================
+      # MongoDB
+      # ==========================
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+          mongodb-version: "8.0"
+
+      # ==========================
+      # Backend
+      # ==========================
+
+      - name: Create Backend .env
+        working-directory: backend
+        run: |
+          echo "PORT=${{ secrets.PORT }}" > .env
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
+          echo "JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}" >> .env
+          echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> .env
+          echo "JWT_ACCESS_EXPIRY=${{ secrets.JWT_ACCESS_EXPIRY }}" >> .env
+          echo "JWT_REFRESH_EXPIRY=${{ secrets.JWT_REFRESH_EXPIRY }}" >> .env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Start Backend
+        working-directory: backend
+        run: |
+          npm run dev &
+
+          
+      - name: Wait for Backend
+        run: |
+          sleep 20
+      # ==========================
+      # Frontend
+      # ==========================
+
+      - name: Create Frontend .env
+        working-directory: frontend
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+          echo "VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" >> .env
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright Tests
+        run: npm test
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 30
