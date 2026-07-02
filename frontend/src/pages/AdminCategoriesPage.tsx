@@ -377,11 +377,10 @@ export default function AdminCategoriesPage() {
                       key={icon.value}
                       type="button"
                       onClick={() => setIconName(icon.value)}
-                      className={`p-2.5 rounded-lg flex items-center justify-center transition-all ${
-                        isSelected
+                      className={`p-2.5 rounded-lg flex items-center justify-center transition-all ${isSelected
                           ? 'bg-violet-600 text-white shadow-md shadow-violet-500/25 scale-110'
                           : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-                      }`}
+                        }`}
                       title={icon.label}
                     >
                       <IconComp className="w-5 h-5" />
@@ -405,11 +404,10 @@ export default function AdminCategoriesPage() {
                       key={col}
                       type="button"
                       onClick={() => setIconColor(col)}
-                      className={`w-7 h-7 rounded-full transition-all ${style.bg} ${
-                        isSelected
+                      className={`w-7 h-7 rounded-full transition-all ${style.bg} ${isSelected
                           ? 'ring-4 ring-offset-2 ring-violet-500 dark:ring-offset-slate-900 scale-110'
                           : 'opacity-70 hover:opacity-100 hover:scale-105'
-                      }`}
+                        }`}
                       title={col}
                     />
                   );
@@ -435,7 +433,7 @@ export default function AdminCategoriesPage() {
             {/* Actions */}
             <button
               type="submit"
-              className="w-full mt-4 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-4 py-3 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
             >
               <FiCheck className="w-4 h-4" />
               <span>{isEditing ? 'Save Changes' : 'Create Category'}</span>
