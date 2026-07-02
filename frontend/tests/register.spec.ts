@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
-    await page.goto('http://192.168.20.148:5173/');
+    await page.goto("/");
     await page.getByRole('link', { name: 'Register' }).click();
     await page.getByRole('textbox', { name: 'John Doe' }).click();
     await page.getByRole('textbox', { name: 'John Doe' }).fill('John Deo');
