@@ -10,7 +10,7 @@ test('test', async ({ page }) => {
     await page.getByRole('button', { name: 'Sign In' }).click();
 
     // Go to Worker Profile
-    await page.getByRole('button', { name: 'H Hamza Khan Lodhi' }).click();
+    await page.getByRole('button', { name: 'Hamza Khan Lodhi' }).click();
     await page.getByRole('link', { name: 'Worker Dashboard' }).click();
     await page.getByRole('link', { name: 'Worker Profile' }).click();
 
