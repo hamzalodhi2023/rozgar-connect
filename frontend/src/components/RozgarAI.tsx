@@ -165,7 +165,7 @@ export default function RozgarAI() {
               placeholder="Ask Rozgar AI..."
               maxLength={500}
               disabled={isLoading}
-              className="flex-grow px-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 focus:border-violet-500 focus:bg-white focus:outline-none rounded-xl text-sm text-slate-800 dark:text-slate-200 transition-all placeholder-slate-400 dark:placeholder-slate-500"
+              className="flex-grow px-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 focus:border-violet-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none rounded-xl text-sm text-slate-800 dark:text-slate-200 transition-all placeholder-slate-400 dark:placeholder-slate-500"
             />
             <button
               type="submit"
