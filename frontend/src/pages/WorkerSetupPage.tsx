@@ -162,7 +162,7 @@ export default function WorkerSetupPage() {
       <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mb-10 text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 mb-3">
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 mb-3">
           {isEditMode ? 'Update Worker Profile' : 'Set Up Worker Profile'}
         </h2>
         <p className="text-base text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
