@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { addMessage, updateConversationLastMessage } from '../redux/slices/chatSlice.js';
 import { setOnlineUsers } from '../redux/slices/authSlice.js';
+import type { RootState } from '../redux/store';
 
 const SocketContext = createContext(null);
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
 
 export const SocketProvider = ({ children }) => {
   const dispatch = useDispatch();
   const [socket, setSocket] = useState(null);
-  const { accessToken, isAuthenticated } = useSelector((state) => state.auth);
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { accessToken, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { activeConversation } = useSelector((state: RootState) => state.chat);
 
   // Keep a ref of activeConversation so that event listeners can access its updated value without closing over stale state
   const activeConversationRef = React.useRef(activeConversation);

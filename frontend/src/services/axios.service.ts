@@ -2,7 +2,8 @@ import axios from 'axios';
 import { store } from '../redux/store.js';
 import { loginSuccess, logoutSuccess } from '../redux/slices/authSlice.js';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+const API_URL = import.meta.env.VITE_API_URL || `http://${HOST}:5000/api/v1`;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,

@@ -63,7 +63,8 @@ export default function WorkerSetupPage() {
           setIsEditMode(true);
           setVerificationStatus(profile.verificationStatus || 'unverified');
           
-          const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+          const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+          const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
           if (profile.photo) {
             setPhotoPreview(`${backendUrl}${profile.photo}`);
           }

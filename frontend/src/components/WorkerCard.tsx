@@ -14,7 +14,8 @@ export default function WorkerCard({ worker }) {
   const workerUserId = userId?._id || userId;
   const isOnline = onlineUsers?.includes(workerUserId);
   
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
   const photoUrl = photo ? (photo.startsWith('http') ? photo : `${backendUrl}${photo}`) : null;
 
   return (
