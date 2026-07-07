@@ -26,11 +26,8 @@ const allowedOrigins = env.corsOrigin.split(',');
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-        return callback(null, true);
-      }
-      return callback(new Error('CORS blocked this origin'), false);
+      // In development/local network mode, we allow all origins.
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

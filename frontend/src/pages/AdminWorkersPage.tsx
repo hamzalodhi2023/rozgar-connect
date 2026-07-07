@@ -131,7 +131,8 @@ export default function AdminWorkersPage() {
     );
   }
 
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -218,7 +219,7 @@ export default function AdminWorkersPage() {
       {/* Review Documents Glass Modal */}
       {showModal && selectedWorker && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] w-full max-w-3xl shadow-xl overflow-hidden animate-slideUp">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-4xl w-full max-w-3xl shadow-xl overflow-hidden animate-slideUp">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <div>

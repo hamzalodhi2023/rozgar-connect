@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth.js';
+import type { RootState } from '../redux/store';
 import { getWorkerProfileById } from '../services/worker.service.js';
 import { createReview, getReviewsForWorker } from '../services/review.service.js';
 import { createConversation } from '../services/chat.service.js';
@@ -14,7 +15,7 @@ export default function WorkerDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const { onlineUsers } = useSelector((state) => state.auth);
+  const { onlineUsers } = useSelector((state: RootState) => state.auth);
   
   const [worker, setWorker] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -102,7 +103,8 @@ export default function WorkerDetailPage() {
   if (!worker) return null;
 
   const workerName = worker.userId?.name || 'Skilled Worker';
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
   const photoUrl = worker.photo ? (worker.photo.startsWith('http') ? worker.photo : `${backendUrl}${worker.photo}`) : null;
 
   // Check if current user is the worker themselves
