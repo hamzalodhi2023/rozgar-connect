@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiPhone, FiMapPin } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import { getCategories } from '../services/category.service.js';
+import { useFormContext } from 'react-hook-form';
 
 const DEFAULT_CATEGORIES = [
   { value: 'plumber', label: 'Plumbing' },
@@ -15,16 +16,12 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function WorkerSetupFields({
-  categories, setCategories,
-  city, setCity,
-  area, setArea,
-  phone, setPhone,
-  whatsapp, setWhatsapp,
-  description, setDescription,
   idCardFrontPreview, handleIdCardFrontChange,
   idCardBackPreview, handleIdCardBackChange,
 }: any) {
+  const { register, watch, setValue, formState: { errors } } = useFormContext();
   const [dbCategories, setDbCategories] = useState<{ value: string; label: string }[]>([]);
+  const selectedCategories = watch('categories') || [];
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -44,6 +41,7 @@ export default function WorkerSetupFields({
     };
     fetchCats();
   }, []);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
       {/* Categories */}
@@ -53,16 +51,16 @@ export default function WorkerSetupFields({
         </label>
         <div className="flex flex-wrap gap-2.5">
           {dbCategories.map((cat) => {
-            const isSelected = categories.includes(cat.value);
+            const isSelected = selectedCategories.includes(cat.value);
             return (
               <button
                 key={cat.value}
                 type="button"
                 onClick={() => {
                   if (isSelected) {
-                    setCategories(categories.filter((c: string) => c !== cat.value));
+                    setValue('categories', selectedCategories.filter((c: string) => c !== cat.value), { shouldValidate: true });
                   } else {
-                    setCategories([...categories, cat.value]);
+                    setValue('categories', [...selectedCategories, cat.value], { shouldValidate: true });
                   }
                 }}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border ${
@@ -76,6 +74,7 @@ export default function WorkerSetupFields({
             );
           })}
         </div>
+        {errors.categories && <p className="text-red-500 text-xs mt-1 ml-1">{errors.categories?.message as string}</p>}
       </div>
 
       {/* City */}
@@ -89,13 +88,14 @@ export default function WorkerSetupFields({
           </div>
           <input
             type="text"
-            required
             placeholder="e.g. Islamabad"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 focus:bg-white dark:focus:bg-slate-900 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
+            {...register('city')}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
+              errors.city ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+            }`}
           />
         </div>
+        {errors.city && <p className="text-red-500 text-xs mt-1 ml-1">{errors.city?.message as string}</p>}
       </div>
 
       {/* Area */}
@@ -109,13 +109,14 @@ export default function WorkerSetupFields({
           </div>
           <input
             type="text"
-            required
             placeholder="e.g. Blue Area"
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 focus:bg-white dark:focus:bg-slate-900 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
+            {...register('area')}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
+              errors.area ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+            }`}
           />
         </div>
+        {errors.area && <p className="text-red-500 text-xs mt-1 ml-1">{errors.area?.message as string}</p>}
       </div>
 
       {/* Phone */}
@@ -129,13 +130,14 @@ export default function WorkerSetupFields({
           </div>
           <input
             type="tel"
-            required
             placeholder="e.g. +923001234567"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 focus:bg-white dark:focus:bg-slate-900 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
+            {...register('phone')}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
+              errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+            }`}
           />
         </div>
+        {errors.phone && <p className="text-red-500 text-xs mt-1 ml-1">{errors.phone?.message as string}</p>}
       </div>
 
       {/* WhatsApp */}
@@ -149,13 +151,14 @@ export default function WorkerSetupFields({
           </div>
           <input
             type="tel"
-            required
             placeholder="e.g. +923001234567"
-            value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm hover:border-slate-300 dark:hover:border-slate-600"
+            {...register('whatsapp')}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
+              errors.whatsapp ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+            }`}
           />
         </div>
+        {errors.whatsapp && <p className="text-red-500 text-xs mt-1 ml-1">{errors.whatsapp?.message as string}</p>}
       </div>
 
       {/* Description */}
@@ -165,14 +168,15 @@ export default function WorkerSetupFields({
         </label>
         <div className="relative group">
           <textarea
-            required
             rows={4}
             placeholder="Describe your services, charges, experience, and why customers should hire you..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 focus:bg-white dark:focus:bg-slate-900 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 resize-none"
+            {...register('description')}
+            className={`w-full px-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm resize-none ${
+              errors.description ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+            }`}
           />
         </div>
+        {errors.description && <p className="text-red-500 text-xs mt-1 ml-1">{errors.description?.message as string}</p>}
       </div>
 
       {/* ID Card Front and Back Verification */}

@@ -5,53 +5,103 @@ import { getProfile, updateProfile, deleteProfile } from '../services/user.servi
 import { FiCheck } from 'react-icons/fi';
 import ProfileBasicInfo from '../components/ProfileBasicInfo';
 import ProfileSecurity from '../components/ProfileSecurity';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const profileSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.newPassword && data.newPassword.length > 0) {
+    if (!data.currentPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Current password is required to set a new password",
+        path: ["currentPassword"]
+      });
+    }
+    if (data.newPassword.length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "New password must be at least 8 characters",
+        path: ["newPassword"]
+      });
+    }
+    if (!/[A-Z]/.test(data.newPassword)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password must contain at least one uppercase letter", path: ["newPassword"] });
+    }
+    if (!/[a-z]/.test(data.newPassword)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password must contain at least one lowercase letter", path: ["newPassword"] });
+    }
+    if (!/[0-9]/.test(data.newPassword)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password must contain at least one number", path: ["newPassword"] });
+    }
+    if (!/[^A-Za-z0-9]/.test(data.newPassword)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password must contain at least one special character", path: ["newPassword"] });
+    }
+  }
+  if (data.currentPassword && data.currentPassword.length > 0 && (!data.newPassword || data.newPassword.length === 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "New password is required",
+      path: ["newPassword"]
+    });
+  }
+});
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
+
 export default function ProfilePage() {
-  const { user, becomeWorker, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
+
+  const methods = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: '',
+      currentPassword: '',
+      newPassword: '',
+    }
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await getProfile();
         if (response.success) {
-          setName(response.data.user.name);
+          methods.setValue('name', response.data.user.name);
           setEmail(response.data.user.email);
         }
-      } catch (error) {
+      } catch (error: any) {
         toast.error('Failed to load profile details');
       } finally {
         setLoading(false);
       }
     };
     fetchUserData();
-  }, []);
+  }, [methods]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name.trim()) return toast.error('Name is required');
-
+  const onSubmit = async (data: ProfileFormValues) => {
     setSaving(true);
     try {
-      const payload: { name: string; currentPassword?: string; newPassword?: string } = { name };
-      if (newPassword) {
-        payload.currentPassword = currentPassword;
-        payload.newPassword = newPassword;
+      const payload: { name: string; currentPassword?: string; newPassword?: string } = { name: data.name };
+      if (data.newPassword && data.currentPassword) {
+        payload.currentPassword = data.currentPassword;
+        payload.newPassword = data.newPassword;
       }
       
       const response = await updateProfile(payload);
       if (response.success) {
         toast.success('Profile details updated successfully');
-        setCurrentPassword('');
-        setNewPassword('');
+        methods.setValue('currentPassword', '');
+        methods.setValue('newPassword', '');
       }
-    } catch (error) {
+    } catch (error: any) {
       const msg = error.response?.data?.message || 'Failed to update details';
       toast.error(msg);
     } finally {
@@ -66,14 +116,13 @@ export default function ProfilePage() {
         await deleteProfile();
         toast.success('Your account has been deleted successfully.');
         logout();
-      } catch (error) {
+      } catch (error: any) {
         const msg = error.response?.data?.message || 'Failed to delete account';
         toast.error(msg);
         setIsDeleting(false);
       }
     }
   };
-
 
   if (loading) {
     return (
@@ -94,27 +143,22 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <ProfileBasicInfo
-          name={name} setName={setName}
-          email={email} user={user}
-        />
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+          <ProfileBasicInfo user={user} email={email} />
+          <ProfileSecurity />
 
-        <ProfileSecurity
-          currentPassword={currentPassword} setCurrentPassword={setCurrentPassword}
-          newPassword={newPassword} setNewPassword={setNewPassword}
-        />
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-3 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          <FiCheck className="w-5 h-5" />
-          <span>{saving ? 'Updating Account...' : 'Save Profile Changes'}</span>
-        </button>
-      </form>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-3 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            <FiCheck className="w-5 h-5" />
+            <span>{saving ? 'Updating Account...' : 'Save Profile Changes'}</span>
+          </button>
+        </form>
+      </FormProvider>
 
       {/* Danger Zone */}
       <div className="mt-10 pt-8 border-t border-red-900/30">

@@ -2,18 +2,36 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required')
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !password) return;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login(email, password);
+      await login(data.email, data.password);
     } catch (error) {
       // Handled by hook toasts
     }
@@ -33,7 +51,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Email */}
         <div>
           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
@@ -43,13 +61,14 @@ export default function LoginPage() {
             <FiMail className="absolute left-3.5 text-slate-500 w-5 h-5" />
             <input
               type="email"
-              required
               placeholder="john@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-950/40 border border-slate-800 focus:border-violet-500 focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all"
+              {...register('email')}
+              className={`w-full pl-11 pr-4 py-3 bg-slate-950/40 border focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all ${
+                errors.email ? 'border-red-500 focus:border-red-500' : 'border-slate-800 focus:border-violet-500'
+              }`}
             />
           </div>
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
 
         {/* Password */}
@@ -61,11 +80,11 @@ export default function LoginPage() {
             <FiLock className="absolute left-3.5 text-slate-500 w-5 h-5" />
             <input
               type={showPassword ? "text" : "password"}
-              required
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-11 pr-11 py-3 bg-slate-950/40 border border-slate-800 focus:border-violet-500 focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all"
+              {...register('password')}
+              className={`w-full pl-11 pr-11 py-3 bg-slate-950/40 border focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all ${
+                errors.password ? 'border-red-500 focus:border-red-500' : 'border-slate-800 focus:border-violet-500'
+              }`}
             />
             <button
               type="button"
@@ -75,6 +94,7 @@ export default function LoginPage() {
               {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
             </button>
           </div>
+          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
         </div>
 
         {/* Submit */}

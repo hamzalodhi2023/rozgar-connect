@@ -5,6 +5,20 @@ import { getMyWorkerProfile, createWorkerProfile, updateWorkerProfile } from '..
 import { FiCheck } from 'react-icons/fi';
 import WorkerSetupPhotoUpload from '../components/WorkerSetupPhotoUpload';
 import WorkerSetupFields from '../components/WorkerSetupFields';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const workerSchema = z.object({
+  categories: z.array(z.string()).min(1, 'Please select at least one category'),
+  city: z.string().min(2, 'City is required'),
+  area: z.string().min(2, 'Area is required'),
+  phone: z.string().min(10, 'Valid phone number is required'),
+  whatsapp: z.string().min(10, 'Valid WhatsApp number is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+});
+
+type WorkerFormValues = z.infer<typeof workerSchema>;
 
 export default function WorkerSetupPage() {
   const navigate = useNavigate();
@@ -12,12 +26,6 @@ export default function WorkerSetupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const [categories, setCategories] = useState([]);
-  const [city, setCity] = useState('');
-  const [area, setArea] = useState('');
-  const [phone, setPhone] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [description, setDescription] = useState('');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [idCardFront, setIdCardFront] = useState(null);
@@ -26,18 +34,32 @@ export default function WorkerSetupPage() {
   const [idCardBackPreview, setIdCardBackPreview] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('unverified');
 
+  const methods = useForm<WorkerFormValues>({
+    resolver: zodResolver(workerSchema),
+    defaultValues: {
+      categories: [],
+      city: '',
+      area: '',
+      phone: '',
+      whatsapp: '',
+      description: '',
+    }
+  });
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await getMyWorkerProfile();
         if (response.success && response.data.profile) {
           const profile = response.data.profile;
-          setCategories(profile.categories || []);
-          setCity(profile.city);
-          setArea(profile.area);
-          setPhone(profile.phone);
-          setWhatsapp(profile.whatsapp);
-          setDescription(profile.description);
+          methods.reset({
+            categories: profile.categories || [],
+            city: profile.city || '',
+            area: profile.area || '',
+            phone: profile.phone || '',
+            whatsapp: profile.whatsapp || '',
+            description: profile.description || ''
+          });
           setIsEditMode(true);
           setVerificationStatus(profile.verificationStatus || 'unverified');
           
@@ -52,7 +74,7 @@ export default function WorkerSetupPage() {
             setIdCardBackPreview(`${backendUrl}${profile.idCardBack}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         // 404 is expected if profile is not setup yet
         if (error.response?.status !== 404) {
           toast.error('Failed to load profile data');
@@ -62,9 +84,9 @@ export default function WorkerSetupPage() {
       }
     };
     fetchProfile();
-  }, []);
+  }, [methods]);
 
-  const handlePhotoChange = (e) => {
+  const handlePhotoChange = (e: any) => {
     const file = e.target.files[0];
     if (file) {
       setPhoto(file);
@@ -72,7 +94,7 @@ export default function WorkerSetupPage() {
     }
   };
 
-  const handleIdCardFrontChange = (e) => {
+  const handleIdCardFrontChange = (e: any) => {
     const file = e.target.files[0];
     if (file) {
       setIdCardFront(file);
@@ -80,7 +102,7 @@ export default function WorkerSetupPage() {
     }
   };
 
-  const handleIdCardBackChange = (e) => {
+  const handleIdCardBackChange = (e: any) => {
     const file = e.target.files[0];
     if (file) {
       setIdCardBack(file);
@@ -88,20 +110,15 @@ export default function WorkerSetupPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (categories.length === 0 || !city || !area || !phone || !whatsapp || !description) {
-      return toast.error('All fields are required');
-    }
-
+  const onSubmit = async (data: WorkerFormValues) => {
     setSubmitting(true);
     const formData = new FormData();
-    formData.append('categories', JSON.stringify(categories));
-    formData.append('city', city);
-    formData.append('area', area);
-    formData.append('phone', phone);
-    formData.append('whatsapp', whatsapp);
-    formData.append('description', description);
+    formData.append('categories', JSON.stringify(data.categories));
+    formData.append('city', data.city);
+    formData.append('area', data.area);
+    formData.append('phone', data.phone);
+    formData.append('whatsapp', data.whatsapp);
+    formData.append('description', data.description);
     if (photo) {
       formData.append('photo', photo);
     }
@@ -121,7 +138,7 @@ export default function WorkerSetupPage() {
         toast.success('Worker profile set up successfully!');
       }
       navigate('/worker-dashboard');
-    } catch (error) {
+    } catch (error: any) {
       const msg = error.response?.data?.message || 'Failed to save profile';
       toast.error(msg);
     } finally {
@@ -193,32 +210,28 @@ export default function WorkerSetupPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
-        <WorkerSetupPhotoUpload photoPreview={photoPreview} handlePhotoChange={handlePhotoChange} />
-        
-        <WorkerSetupFields
-          categories={categories} setCategories={setCategories}
-          city={city} setCity={setCity}
-          area={area} setArea={setArea}
-          phone={phone} setPhone={setPhone}
-          whatsapp={whatsapp} setWhatsapp={setWhatsapp}
-          description={description} setDescription={setDescription}
-          idCardFrontPreview={idCardFrontPreview} handleIdCardFrontChange={handleIdCardFrontChange}
-          idCardBackPreview={idCardBackPreview} handleIdCardBackChange={handleIdCardBackChange}
-        />
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
+          <WorkerSetupPhotoUpload photoPreview={photoPreview} handlePhotoChange={handlePhotoChange} />
+          
+          <WorkerSetupFields
+            idCardFrontPreview={idCardFrontPreview} handleIdCardFrontChange={handleIdCardFrontChange}
+            idCardBackPreview={idCardBackPreview} handleIdCardBackChange={handleIdCardBackChange}
+          />
 
-        {/* Submit */}
-        <div className="pt-6">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-violet-500/20 disabled:opacity-70 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
-          >
-            <FiCheck className="w-6 h-6" />
-            <span>{submitting ? 'Saving Profile...' : isEditMode ? 'Update Profile' : 'Complete Setup'}</span>
-          </button>
-        </div>
-      </form>
+          {/* Submit */}
+          <div className="pt-6">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-violet-500/20 disabled:opacity-70 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+            >
+              <FiCheck className="w-6 h-6" />
+              <span>{submitting ? 'Saving Profile...' : isEditMode ? 'Update Profile' : 'Complete Setup'}</span>
+            </button>
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }
