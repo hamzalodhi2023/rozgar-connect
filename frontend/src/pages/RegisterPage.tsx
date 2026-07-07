@@ -57,7 +57,22 @@ export default function RegisterPage() {
     }
   };
 
-  const strength = getStrengthLabel(watchPassword ? passwordStrength.score : -1);
+  let finalScore = -1;
+  if (watchPassword) {
+    const hasUpper = /[A-Z]/.test(watchPassword);
+    const hasLower = /[a-z]/.test(watchPassword);
+    const hasNumber = /[0-9]/.test(watchPassword);
+    const hasSpecial = /[^A-Za-z0-9]/.test(watchPassword);
+    const hasMinLen = watchPassword.length >= 8;
+    
+    finalScore = passwordStrength.score;
+    // Cap score at 2 (Fair) if strict validation requirements aren't met
+    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial || !hasMinLen) {
+      finalScore = Math.min(finalScore, 2);
+    }
+  }
+
+  const strength = getStrengthLabel(finalScore);
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
@@ -153,11 +168,11 @@ export default function RegisterPage() {
                 <span className={`text-xs font-bold ${strength.textClass}`}>{strength.label}</span>
               </div>
               <div className="w-full bg-slate-800 rounded-full h-1.5 flex gap-1 overflow-hidden">
-                <div className={`h-full flex-1 ${passwordStrength.score >= 0 ? strength.color : 'bg-slate-700'}`}></div>
-                <div className={`h-full flex-1 ${passwordStrength.score >= 1 ? strength.color : 'bg-slate-700'}`}></div>
-                <div className={`h-full flex-1 ${passwordStrength.score >= 2 ? strength.color : 'bg-slate-700'}`}></div>
-                <div className={`h-full flex-1 ${passwordStrength.score >= 3 ? strength.color : 'bg-slate-700'}`}></div>
-                <div className={`h-full flex-1 ${passwordStrength.score >= 4 ? strength.color : 'bg-slate-700'}`}></div>
+                <div className={`h-full flex-1 ${finalScore >= 0 ? strength.color : 'bg-slate-700'}`}></div>
+                <div className={`h-full flex-1 ${finalScore >= 1 ? strength.color : 'bg-slate-700'}`}></div>
+                <div className={`h-full flex-1 ${finalScore >= 2 ? strength.color : 'bg-slate-700'}`}></div>
+                <div className={`h-full flex-1 ${finalScore >= 3 ? strength.color : 'bg-slate-700'}`}></div>
+                <div className={`h-full flex-1 ${finalScore >= 4 ? strength.color : 'bg-slate-700'}`}></div>
               </div>
               {passwordStrength.feedback.warning && (
                 <p className="text-xs text-orange-400 mt-1">{passwordStrength.feedback.warning}</p>
