@@ -98,6 +98,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button
+                  data-testid="user-dropdown-btn"
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center space-x-2 text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
                 >

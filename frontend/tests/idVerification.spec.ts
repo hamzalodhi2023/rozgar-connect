@@ -9,7 +9,7 @@ test('Worker ID Verification Upload', async ({ page }) => {
     await page.getByRole('button', { name: 'Sign In' }).click();
     
     // Navigate via UI to avoid state reset
-    await page.locator('button', { hasText: 'Hamza Khan Lodhi' }).click();
+    await page.getByTestId('user-dropdown-btn').click();
     await page.getByRole('link', { name: 'Worker Dashboard' }).click();
     
     await page.waitForURL('**/worker-dashboard');
