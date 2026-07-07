@@ -1,7 +1,10 @@
 import React from 'react';
 import { FiUser, FiMail } from 'react-icons/fi';
+import { useFormContext } from 'react-hook-form';
 
-export default function ProfileBasicInfo({ name, setName, email, user }: any) {
+export default function ProfileBasicInfo({ user, email }: any) {
+  const { register, formState: { errors } } = useFormContext();
+
   return (
     <>
       {/* Name */}
@@ -13,12 +16,13 @@ export default function ProfileBasicInfo({ name, setName, email, user }: any) {
           <FiUser className="absolute left-3.5 text-slate-500 w-5 h-5" />
           <input
             type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-slate-950/40 border border-slate-800 focus:border-violet-500 focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all"
+            {...register('name')}
+            className={`w-full pl-11 pr-4 py-3 bg-slate-950/40 border focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all ${
+              errors.name ? 'border-red-500 focus:border-red-500' : 'border-slate-800 focus:border-violet-500'
+            }`}
           />
         </div>
+        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name?.message as string}</p>}
       </div>
 
       {/* Email (Read Only) */}
