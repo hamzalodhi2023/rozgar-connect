@@ -43,8 +43,8 @@ export default function HomePage() {
         <div className="flex items-start space-x-4">
           <FiCheckCircle className="w-8 h-8 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Direct Communication</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Message workers in real time using our internal chat, or contact them directly via phone or WhatsApp.</p>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">In-App Messaging</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Message workers directly through our secure internal chat system to arrange services.</p>
           </div>
         </div>
         <div className="flex items-start space-x-4">
