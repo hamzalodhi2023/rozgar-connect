@@ -102,24 +102,6 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
             </button>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href={`tel:${worker.phone}`}
-              className="py-2.5 bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-1.5"
-            >
-              <FiPhone className="w-4 h-4" />
-              <span>Call</span>
-            </a>
-            <a
-              href={`https://wa.me/${worker.whatsapp.replace(/[^0-9]/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="py-2.5 bg-emerald-950/20 border border-emerald-900/40 text-emerald-450 hover:bg-emerald-900/20 hover:text-emerald-300 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-1.5"
-            >
-              <FaWhatsapp className="w-4 h-4" />
-              <span>WhatsApp</span>
-            </a>
-          </div>
         </div>
       </div>
     </div>

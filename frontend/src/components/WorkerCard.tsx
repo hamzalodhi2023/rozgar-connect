@@ -84,26 +84,7 @@ export default function WorkerCard({ worker }) {
       </div>
 
       {/* Action Footer */}
-      <div className="mt-4 pt-4 border-t border-slate-800/60 flex items-center justify-between gap-2">
-        <div className="flex items-center space-x-1">
-          <a
-            href={`tel:${phone}`}
-            className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
-            title="Call Worker"
-          >
-            <FiPhone className="w-4 h-4" />
-          </a>
-          <a
-            href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-lg bg-emerald-950/20 text-emerald-450 hover:bg-emerald-900/20 hover:text-emerald-300 transition-colors"
-            title="WhatsApp Chat"
-          >
-            <FaWhatsapp className="w-4 h-4" />
-          </a>
-        </div>
-
+      <div className="mt-4 pt-4 border-t border-slate-800/60 flex items-center justify-end gap-2">
         <Link
           to={`/workers/${_id}`}
           className="flex items-center px-4 py-2 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm hover:shadow transition-all space-x-1"
