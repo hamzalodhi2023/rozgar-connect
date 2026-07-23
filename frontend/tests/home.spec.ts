@@ -9,7 +9,7 @@ test.describe('Home Page', () => {
 
     // Check features/selling points
     await expect(page.getByText('Local & Instant')).toBeVisible();
-    await expect(page.getByText('Direct Communication')).toBeVisible();
+    await expect(page.getByText('In-App Messaging')).toBeVisible();
     await expect(page.getByText('Reviews & Ratings')).toBeVisible();
 
     // Check headings for sections
