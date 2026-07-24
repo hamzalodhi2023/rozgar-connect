@@ -25,6 +25,7 @@ import AdminUsersPage from '../pages/AdminUsersPage';
 import AdminWorkersPage from '../pages/AdminWorkersPage';
 import AdminReviewsPage from '../pages/AdminReviewsPage';
 import AdminCategoriesPage from '../pages/AdminCategoriesPage';
+import AdminLocationsPage from '../pages/AdminLocationsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 // Guards
@@ -141,6 +142,7 @@ export default function AppRouter() {
         <Route path="workers" element={<AdminWorkersPage />} />
         <Route path="reviews" element={<AdminReviewsPage />} />
         <Route path="categories" element={<AdminCategoriesPage />} />
+        <Route path="locations" element={<AdminLocationsPage />} />
       </Route>
 
       {/* 404 Page (Mount inside MainLayout) */}
