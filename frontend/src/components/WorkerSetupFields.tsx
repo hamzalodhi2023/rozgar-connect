@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FiPhone, FiMapPin } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
+import { getLocations } from '../services/location.service.js';
 import { getCategories } from '../services/category.service.js';
 import { useFormContext } from 'react-hook-form';
-
 const DEFAULT_CATEGORIES = [
   { value: 'plumber', label: 'Plumbing' },
   { value: 'electrician', label: 'Electrical' },
@@ -19,12 +19,21 @@ export default function WorkerSetupFields({
   idCardFrontPreview, handleIdCardFrontChange,
   idCardBackPreview, handleIdCardBackChange,
 }: any) {
-  const { register, watch, setValue, formState: { errors } } = useFormContext();
+  const { register, watch, setValue, formState: { errors }, clearErrors } = useFormContext();
   const [dbCategories, setDbCategories] = useState<{ value: string; label: string }[]>([]);
+  const [dbCities, setDbCities] = useState<string[]>([]);
+  const [dbAreas, setDbAreas] = useState<string[]>([]);
   const selectedCategories = watch('categories') || [];
+  const cityValue = watch('city') || '';
+  const areaValue = watch('area') || '';
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
+  
+  const cityRegister = register('city');
+  const areaRegister = register('area');
 
   useEffect(() => {
-    const fetchCats = async () => {
+    const fetchData = async () => {
       try {
         const response = await getCategories();
         if (response.success && response.data.categories?.length > 0) {
@@ -38,8 +47,20 @@ export default function WorkerSetupFields({
       } catch (error) {
         setDbCategories(DEFAULT_CATEGORIES);
       }
+
+      try {
+        const locResponse = await getLocations();
+        if (locResponse.success && locResponse.data.locations?.length > 0) {
+          const fetchedCities = locResponse.data.locations.filter((l: any) => l.type === 'city').map((l: any) => l.label);
+          const fetchedAreas = locResponse.data.locations.filter((l: any) => l.type === 'area').map((l: any) => l.label);
+          setDbCities(fetchedCities);
+          setDbAreas(fetchedAreas);
+        }
+      } catch (error) {
+        console.error('Failed to load locations', error);
+      }
     };
-    fetchCats();
+    fetchData();
   }, []);
 
   return (
@@ -82,18 +103,49 @@ export default function WorkerSetupFields({
         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
           City
         </label>
-        <div className="relative group">
+        <div className="relative group z-20">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <FiMapPin className="text-slate-400 dark:text-slate-500 w-5 h-5 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors duration-300" />
           </div>
           <input
             type="text"
             placeholder="e.g. Islamabad"
-            {...register('city')}
+            {...cityRegister}
+            onChange={(e) => {
+              cityRegister.onChange(e);
+              setShowCitySuggestions(true);
+            }}
+            onFocus={() => setShowCitySuggestions(true)}
+            onBlur={(e) => {
+              setTimeout(() => setShowCitySuggestions(false), 150);
+              cityRegister.onBlur(e);
+            }}
             className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
               errors.city ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
             }`}
           />
+          {showCitySuggestions && (
+            <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
+              {dbCities.filter(c => c.toLowerCase().includes(cityValue.toLowerCase())).length > 0 ? (
+                dbCities.filter(c => c.toLowerCase().includes(cityValue.toLowerCase())).map((c) => (
+                  <li
+                    key={c}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setValue('city', c, { shouldValidate: true });
+                      clearErrors('city');
+                      setShowCitySuggestions(false);
+                    }}
+                    className="px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-violet-600 dark:hover:text-violet-400 cursor-pointer transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-b-0"
+                  >
+                    {c}
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">No city found</li>
+              )}
+            </ul>
+          )}
         </div>
         {errors.city && <p className="text-red-500 text-xs mt-1 ml-1">{errors.city?.message as string}</p>}
       </div>
@@ -103,18 +155,49 @@ export default function WorkerSetupFields({
         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
           Area/Neighborhood
         </label>
-        <div className="relative group">
+        <div className="relative group z-10">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <FiMapPin className="text-slate-400 dark:text-slate-500 w-5 h-5 group-focus-within:text-violet-500 dark:group-focus-within:text-violet-400 transition-colors duration-300" />
           </div>
           <input
             type="text"
             placeholder="e.g. Blue Area"
-            {...register('area')}
+            {...areaRegister}
+            onChange={(e) => {
+              areaRegister.onChange(e);
+              setShowAreaSuggestions(true);
+            }}
+            onFocus={() => setShowAreaSuggestions(true)}
+            onBlur={(e) => {
+              setTimeout(() => setShowAreaSuggestions(false), 150);
+              areaRegister.onBlur(e);
+            }}
             className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
               errors.area ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
             }`}
           />
+          {showAreaSuggestions && (
+            <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
+              {dbAreas.filter(a => a.toLowerCase().includes(areaValue.toLowerCase())).length > 0 ? (
+                dbAreas.filter(a => a.toLowerCase().includes(areaValue.toLowerCase())).map((a) => (
+                  <li
+                    key={a}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setValue('area', a, { shouldValidate: true });
+                      clearErrors('area');
+                      setShowAreaSuggestions(false);
+                    }}
+                    className="px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-violet-600 dark:hover:text-violet-400 cursor-pointer transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-b-0"
+                  >
+                    {a}
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">No matching area</li>
+              )}
+            </ul>
+          )}
         </div>
         {errors.area && <p className="text-red-500 text-xs mt-1 ml-1">{errors.area?.message as string}</p>}
       </div>

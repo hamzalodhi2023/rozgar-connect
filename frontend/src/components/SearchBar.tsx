@@ -11,18 +11,44 @@ const DEFAULT_CATEGORIES = [
   'mechanic',
   'gardener',
   'cleaner',
+  'mason',
+  'welder',
+  'tailor',
+  'driver',
+  'cook',
+  'maid',
+  'nanny',
+  'tutor',
+  'beautician',
+  'barber',
+  'pest control',
+  'appliance repair',
+  'computer repair',
+  'mobile repair',
+  'laborer',
+  'movers',
+  'glazier',
+  'aluminum worker',
+  'solar technician',
+  'photographer'
 ];
+
+import { getLocations } from '../services/location.service.js';
 
 export default function SearchBar({ onSearch }) {
   const [categories, setCategories] = useState<string[]>([]);
+  const [dbCities, setDbCities] = useState<string[]>([]);
+  const [dbAreas, setDbAreas] = useState<string[]>([]);
   const [category, setCategory] = useState('');
   const [city, setCity] = useState('');
   const [area, setArea] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
 
   useEffect(() => {
-    const fetchCats = async () => {
+    const fetchData = async () => {
       try {
         const response = await getCategories();
         if (response.success && response.data.categories?.length > 0) {
@@ -33,8 +59,20 @@ export default function SearchBar({ onSearch }) {
       } catch (error) {
         setCategories(DEFAULT_CATEGORIES);
       }
+
+      try {
+        const locResponse = await getLocations();
+        if (locResponse.success && locResponse.data.locations?.length > 0) {
+          const fetchedCities = locResponse.data.locations.filter((l: any) => l.type === 'city').map((l: any) => l.label);
+          const fetchedAreas = locResponse.data.locations.filter((l: any) => l.type === 'area').map((l: any) => l.label);
+          setDbCities(fetchedCities);
+          setDbAreas(fetchedAreas);
+        }
+      } catch (error) {
+        console.error('Failed to load locations', error);
+      }
     };
-    fetchCats();
+    fetchData();
   }, []);
 
   const handleSubmit = (e) => {
@@ -94,10 +132,37 @@ export default function SearchBar({ onSearch }) {
               type="text"
               placeholder="e.g. Islamabad"
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              onChange={(e) => {
+                setCity(e.target.value);
+                setShowCitySuggestions(true);
+              }}
+              onFocus={() => setShowCitySuggestions(true)}
+              onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
               className="w-full pl-11 pr-4 py-3 bg-slate-950/40 border border-slate-800 focus:border-violet-500 focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all"
             />
           </div>
+          {/* City Suggestions Dropdown */}
+          {showCitySuggestions && (
+            <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-slate-900 border border-slate-700 rounded-xl shadow-lg custom-scrollbar">
+              {dbCities.filter(c => c.toLowerCase().includes(city.toLowerCase())).length > 0 ? (
+                dbCities.filter(c => c.toLowerCase().includes(city.toLowerCase())).map((c) => (
+                  <li
+                    key={c}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setCity(c);
+                      setShowCitySuggestions(false);
+                    }}
+                    className="px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-violet-400 cursor-pointer transition-colors border-b border-slate-800/50 last:border-b-0"
+                  >
+                    {c}
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">No city found</li>
+              )}
+            </ul>
+          )}
         </div>
 
         {/* Search Button / Filters Toggle */}
@@ -125,7 +190,7 @@ export default function SearchBar({ onSearch }) {
       {showFilters && (
         <div className="mt-6 pt-6 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fadeIn">
           {/* Area Field */}
-          <div>
+          <div className="relative">
             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
               Area/Neighborhood
             </label>
@@ -133,9 +198,36 @@ export default function SearchBar({ onSearch }) {
               type="text"
               placeholder="e.g. Blue Area"
               value={area}
-              onChange={(e) => setArea(e.target.value)}
+              onChange={(e) => {
+                setArea(e.target.value);
+                setShowAreaSuggestions(true);
+              }}
+              onFocus={() => setShowAreaSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowAreaSuggestions(false), 150)}
               className="w-full px-4 py-3 bg-slate-950/40 border border-slate-800 focus:border-violet-500 focus:bg-slate-950/70 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all"
             />
+            {/* Area Suggestions Dropdown */}
+            {showAreaSuggestions && (
+              <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-slate-900 border border-slate-700 rounded-xl shadow-lg custom-scrollbar">
+                {dbAreas.filter(a => a.toLowerCase().includes(area.toLowerCase())).length > 0 ? (
+                  dbAreas.filter(a => a.toLowerCase().includes(area.toLowerCase())).map((a) => (
+                    <li
+                      key={a}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setArea(a);
+                        setShowAreaSuggestions(false);
+                      }}
+                      className="px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-violet-400 cursor-pointer transition-colors border-b border-slate-800/50 last:border-b-0"
+                    >
+                      {a}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-3 text-sm text-slate-500 text-center">No matching area</li>
+                )}
+              </ul>
+            )}
           </div>
 
           {/* Sort By Field */}
