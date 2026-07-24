@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { refreshUserToken } from '../services/auth.service.js';
 import { loginSuccess, setCheckingSession } from '../redux/slices/authSlice.js';
+import { RootState } from '../redux/store';
 
 // Layouts
 import MainLayout from '../layouts/MainLayout';
@@ -35,7 +36,7 @@ import { ProtectedRoute, GuestRoute, RoleRoute } from './RouteGuards';
 
 export default function AppRouter() {
   const dispatch = useDispatch();
-  const { checkingSession } = useSelector((state) => state.auth);
+  const { checkingSession } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const restoreSession = async () => {
