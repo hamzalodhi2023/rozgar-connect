@@ -62,7 +62,7 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
               <span>Verification Pending</span>
             </p>
             <p className="text-[10px] text-slate-350 leading-normal text-center sm:text-left">
-              Your documents are under review by our admin team. We will notify you once verified.
+              His/Her documents are under review by our admin team. We will notify you once verified.
             </p>
           </div>
         )}
