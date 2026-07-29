@@ -16,7 +16,7 @@ export const createWorkerProfile = async (req, res, next) => {
       return sendError(res, 'Worker profile already exists for this user', 400);
     }
 
-    const { categories, city, area, phone, whatsapp, description } = req.body;
+    const { categories, city, area, phone, whatsapp, description, latitude, longitude } = req.body;
     
     const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
     let photo = '';
@@ -52,6 +52,8 @@ export const createWorkerProfile = async (req, res, next) => {
       idCardFront,
       idCardBack,
       verificationStatus,
+      latitude,
+      longitude,
     });
 
     await newProfile.save();
@@ -71,7 +73,7 @@ export const updateWorkerProfile = async (req, res, next) => {
       return sendError(res, 'Worker profile not found', 404);
     }
 
-    const { categories, city, area, phone, whatsapp, description } = req.body;
+    const { categories, city, area, phone, whatsapp, description, latitude, longitude } = req.body;
 
     if (categories) profile.categories = categories;
     if (city) profile.city = city;
@@ -79,6 +81,8 @@ export const updateWorkerProfile = async (req, res, next) => {
     if (phone) profile.phone = phone;
     if (whatsapp) profile.whatsapp = whatsapp;
     if (description) profile.description = description;
+    if (latitude !== undefined) profile.latitude = latitude;
+    if (longitude !== undefined) profile.longitude = longitude;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
     if (files) {

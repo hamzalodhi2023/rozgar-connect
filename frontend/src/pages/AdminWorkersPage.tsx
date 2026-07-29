@@ -132,7 +132,8 @@ export default function AdminWorkersPage() {
   }
 
   const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  let backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  if (backendUrl === '/') backendUrl = ''; // Fix double slash for proxy
 
   return (
     <div className="space-y-6 animate-fadeIn">

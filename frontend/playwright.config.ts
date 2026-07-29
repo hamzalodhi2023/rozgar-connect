@@ -4,14 +4,16 @@ export default defineConfig({
   testDir: "./tests",
 
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: "https://localhost:5173",
     trace: "on-first-retry",
+    ignoreHTTPSErrors: true,
   },
 
   webServer: {
     command: "npm run dev",
-    url: "http://localhost:5173",
+    url: "https://localhost:5173",
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    ignoreHTTPSErrors: true,
   },
 });

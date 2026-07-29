@@ -16,6 +16,8 @@ const workerSchema = z.object({
   phone: z.string().min(10, 'Valid phone number is required'),
   whatsapp: z.string().min(10, 'Valid WhatsApp number is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
+  latitude: z.number({ required_error: 'GPS Location is required', invalid_type_error: 'GPS Location is required' }),
+  longitude: z.number({ required_error: 'GPS Location is required', invalid_type_error: 'GPS Location is required' }),
 });
 
 type WorkerFormValues = z.infer<typeof workerSchema>;
@@ -64,7 +66,9 @@ export default function WorkerSetupPage() {
           setVerificationStatus(profile.verificationStatus || 'unverified');
           
           const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-          const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+          let backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+          if (backendUrl === '/') backendUrl = ''; // Fix double slash for proxy
+
           if (profile.photo) {
             setPhotoPreview(`${backendUrl}${profile.photo}`);
           }
@@ -120,6 +124,12 @@ export default function WorkerSetupPage() {
     formData.append('phone', data.phone);
     formData.append('whatsapp', data.whatsapp);
     formData.append('description', data.description);
+    if (data.latitude !== undefined) {
+      formData.append('latitude', data.latitude.toString());
+    }
+    if (data.longitude !== undefined) {
+      formData.append('longitude', data.longitude.toString());
+    }
     if (photo) {
       formData.append('photo', photo);
     }

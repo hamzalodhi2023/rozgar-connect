@@ -75,9 +75,24 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
           ))}
         </div>
 
-        <div className="mt-4 flex items-center justify-center text-sm text-slate-400">
-          <FiMapPin className="w-4 h-4 mr-1 text-slate-500" />
-          <span className="capitalize">{worker.area}, {worker.city}</span>
+        <div className="mt-4 flex flex-col items-center justify-center text-sm text-slate-400">
+          <div className="flex items-center">
+            <FiMapPin className="w-4 h-4 mr-1 text-slate-500" />
+            <span className="capitalize">{worker.area}, {worker.city}</span>
+          </div>
+          {(worker.latitude && worker.longitude) && (
+            <a
+              href={`https://www.google.com/maps?q=${worker.latitude},${worker.longitude}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1.5 text-[11px] font-bold text-violet-500 hover:text-violet-400 hover:underline flex items-center gap-1 bg-violet-500/10 px-2 py-0.5 rounded-full"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              View on Map
+            </a>
+          )}
         </div>
 
         <div className="mt-4 flex flex-col items-center justify-center space-y-1">

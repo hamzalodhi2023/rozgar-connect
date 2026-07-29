@@ -103,7 +103,9 @@ export default function WorkerDetailPage() {
 
   const workerName = worker.userId?.name || 'Skilled Worker';
   const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  let backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  if (backendUrl === '/') backendUrl = ''; // Fix double slash for proxy
+  
   const photoUrl = worker.photo ? (worker.photo.startsWith('http') ? worker.photo : `${backendUrl}${worker.photo}`) : null;
 
   // Check if current user is the worker themselves
