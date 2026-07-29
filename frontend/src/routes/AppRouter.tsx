@@ -19,6 +19,7 @@ import RegisterPage from '../pages/RegisterPage';
 import ChatPage from '../pages/ChatPage';
 import ProfilePage from '../pages/ProfilePage';
 import SettingsPage from '../pages/SettingsPage';
+import JobsPage from '../pages/JobsPage';
 import WorkerSetupPage from '../pages/WorkerSetupPage';
 import WorkerDashboardPage from '../pages/WorkerDashboardPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage';
@@ -76,6 +77,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute>
               <ChatPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/jobs"
+          element={
+            <ProtectedRoute>
+              <JobsPage />
             </ProtectedRoute>
           }
         />

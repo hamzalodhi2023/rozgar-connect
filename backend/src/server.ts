@@ -19,7 +19,9 @@ const startServer = async () => {
   // 3. Initialize Socket.IO
   const io = new Server(server, {
     cors: {
-      origin: env.corsOrigin.split(','),
+      origin: (origin, callback) => {
+        return callback(null, true);
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },

@@ -12,7 +12,7 @@ router.post(
   '/',
   requireAuth,
   [
-    body('workerId').notEmpty().withMessage('Worker ID is required').isMongoId().withMessage('Invalid worker ID format'),
+    body('jobId').notEmpty().withMessage('Job ID is required').isMongoId().withMessage('Invalid job ID format'),
     body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be an integer between 1 and 5'),
     body('comment').trim().notEmpty().withMessage('Comment is required'),
   ],

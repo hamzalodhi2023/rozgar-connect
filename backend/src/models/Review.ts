@@ -8,6 +8,11 @@ const reviewSchema = new mongoose.Schema(
       ref: 'WorkerProfile',
       required: true,
     },
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job',
+      required: true,
+    },
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -30,8 +35,8 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// Prevent user from reviewing the same worker multiple times
-reviewSchema.index({ workerId: 1, customerId: 1 }, { unique: true });
+// Prevent user from reviewing the same job multiple times
+reviewSchema.index({ jobId: 1 }, { unique: true });
 
 // Static method to calculate average rating and review count
 reviewSchema.statics.calculateAverageRating = async function (workerId) {

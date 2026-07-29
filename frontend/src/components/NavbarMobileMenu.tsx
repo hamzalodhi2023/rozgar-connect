@@ -41,6 +41,14 @@ export default function NavbarMobileMenu({ user, isAuthenticated, setIsOpen, han
           </div>
 
           <Link
+            to="/jobs"
+            onClick={() => setIsOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+          >
+            My Jobs
+          </Link>
+
+          <Link
             to="/profile"
             onClick={() => setIsOpen(false)}
             className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"

@@ -3,7 +3,7 @@ import StarRating from './StarRating';
 import { FiPhone, FiMapPin, FiMessageSquare } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 
-export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onlineUsers, isSelf, handleChatNow }: any) {
+export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onlineUsers, isSelf, handleChatNow, openHireModal }: any) {
   return (
     <div className="lg:col-span-1 space-y-6">
       <div className="bg-slate-900 border border-slate-800/60 rounded-3xl p-6 shadow-sm text-center">
@@ -93,13 +93,22 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
         {/* Actions */}
         <div className="mt-6 space-y-3">
           {!isSelf && (
-            <button
-              onClick={handleChatNow}
-              className="w-full py-3 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none flex items-center justify-center gap-2"
-            >
-              <FiMessageSquare className="w-5 h-5" />
-              <span>Chat Now</span>
-            </button>
+            <>
+              <button
+                onClick={openHireModal}
+                className="w-full py-3 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none flex items-center justify-center gap-2"
+              >
+                <FiMessageSquare className="w-5 h-5 hidden" /> {/* Placeholder for icon space matching if needed, or remove */}
+                <span>Request Job</span>
+              </button>
+              <button
+                onClick={handleChatNow}
+                className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none flex items-center justify-center gap-2 border border-slate-700"
+              >
+                <FiMessageSquare className="w-5 h-5" />
+                <span>Chat Now</span>
+              </button>
+            </>
           )}
 
         </div>

@@ -28,7 +28,7 @@ export default function WorkerSetupFields({
   const areaValue = watch('area') || '';
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
-  
+
   const cityRegister = register('city');
   const areaRegister = register('area');
 
@@ -84,11 +84,10 @@ export default function WorkerSetupFields({
                     setValue('categories', [...selectedCategories, cat.value], { shouldValidate: true });
                   }
                 }}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border ${
-                  isSelected
-                    ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-500/25 scale-105'
-                    : 'bg-slate-50/80 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:border-violet-400 dark:hover:border-violet-500'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border ${isSelected
+                  ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-500/25 scale-105'
+                  : 'bg-slate-50/80 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:border-violet-400 dark:hover:border-violet-500'
+                  }`}
               >
                 {cat.label}
               </button>
@@ -120,9 +119,8 @@ export default function WorkerSetupFields({
               setTimeout(() => setShowCitySuggestions(false), 150);
               cityRegister.onBlur(e);
             }}
-            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
-              errors.city ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
-            }`}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${errors.city ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+              }`}
           />
           {showCitySuggestions && (
             <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
@@ -172,9 +170,8 @@ export default function WorkerSetupFields({
               setTimeout(() => setShowAreaSuggestions(false), 150);
               areaRegister.onBlur(e);
             }}
-            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
-              errors.area ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
-            }`}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${errors.area ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+              }`}
           />
           {showAreaSuggestions && (
             <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
@@ -215,9 +212,8 @@ export default function WorkerSetupFields({
             type="tel"
             placeholder="e.g. +923001234567"
             {...register('phone')}
-            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
-              errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
-            }`}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+              }`}
           />
         </div>
         {errors.phone && <p className="text-red-500 text-xs mt-1 ml-1">{errors.phone?.message as string}</p>}
@@ -236,9 +232,8 @@ export default function WorkerSetupFields({
             type="tel"
             placeholder="e.g. +923001234567"
             {...register('whatsapp')}
-            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${
-              errors.whatsapp ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 hover:border-slate-300 dark:hover:border-slate-600'
-            }`}
+            className={`w-full pl-11 pr-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm ${errors.whatsapp ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+              }`}
           />
         </div>
         {errors.whatsapp && <p className="text-red-500 text-xs mt-1 ml-1">{errors.whatsapp?.message as string}</p>}
@@ -254,9 +249,8 @@ export default function WorkerSetupFields({
             rows={4}
             placeholder="Describe your services, charges, experience, and why customers should hire you..."
             {...register('description')}
-            className={`w-full px-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm resize-none ${
-              errors.description ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
-            }`}
+            className={`w-full px-4 py-3.5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border focus:bg-white dark:focus:bg-slate-900 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none transition-all duration-300 shadow-sm resize-none ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 dark:border-slate-700/80 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 hover:border-slate-300 dark:hover:border-slate-600'
+              }`}
           />
         </div>
         {errors.description && <p className="text-red-500 text-xs mt-1 ml-1">{errors.description?.message as string}</p>}
@@ -279,7 +273,7 @@ export default function WorkerSetupFields({
                 <img
                   src={idCardFrontPreview}
                   alt="ID Front Preview"
-                  className="w-full h-full object-cover rounded-3xl"
+                  className="w-full h-full object-cover rounded-3xl blur-md transition-all duration-300"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-3xl">
                   <label className="px-4 py-2 bg-white text-slate-800 font-bold text-xs rounded-xl shadow cursor-pointer">
@@ -319,7 +313,7 @@ export default function WorkerSetupFields({
                 <img
                   src={idCardBackPreview}
                   alt="ID Back Preview"
-                  className="w-full h-full object-cover rounded-3xl"
+                  className="w-full h-full object-cover rounded-3xl blur-md transition-all duration-300"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-3xl">
                   <label className="px-4 py-2 bg-white text-slate-800 font-bold text-xs rounded-xl shadow cursor-pointer">
