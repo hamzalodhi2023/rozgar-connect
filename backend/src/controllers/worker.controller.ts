@@ -146,10 +146,10 @@ export const searchWorkers = async (req, res, next) => {
       filter.categories = (category as string).trim().toLowerCase();
     }
     if (city) {
-      filter.city = (city as string).trim().toLowerCase();
+      filter.city = { $regex: (city as string).trim(), $options: 'i' };
     }
     if (area) {
-      filter.area = (area as string).trim().toLowerCase();
+      filter.area = { $regex: (area as string).trim(), $options: 'i' };
     }
 
     // Only show workers whose user accounts are active
