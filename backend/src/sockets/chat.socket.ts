@@ -1,6 +1,7 @@
 import { verifyAccessToken } from '../utils/jwt.utils.js';
 import { Message } from '../models/Message.js';
 import { Conversation } from '../models/Conversation.js';
+import { Job } from '../models/Job.js';
 
 const onlineUsers = new Map(); // userId -> Set of socketIds
 
@@ -83,6 +84,19 @@ export const setupChatSocket = (io) => {
 
         if (!conversationId || !content) {
           return socket.emit('error', { message: 'Conversation ID and content are required' });
+        }
+
+        // Enforce job authorization
+        const validJob = await Job.findOne({
+          $or: [
+            { customerId: userId, workerId: recipientId },
+            { customerId: recipientId, workerId: userId },
+          ],
+          status: { $in: ['accepted', 'in-progress', 'worker-completed', 'completed'] },
+        });
+
+        if (!validJob) {
+          return socket.emit('error', { message: 'Chat is disabled. You must have an active job with this user.' });
         }
 
         // Save message to Database

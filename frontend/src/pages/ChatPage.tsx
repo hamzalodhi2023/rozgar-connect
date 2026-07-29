@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 import toast from 'react-hot-toast';
 import {
   setConversations,
@@ -15,8 +16,8 @@ import ChatWindow from '../components/ChatWindow';
 
 export default function ChatPage() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { conversations, activeConversation, messages, loading } = useSelector((state) => state.chat);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { conversations, activeConversation, messages, loading } = useSelector((state: RootState) => state.chat);
   const socket = useSocket();
 
   const [messageText, setMessageText] = useState('');
@@ -103,8 +104,14 @@ export default function ChatPage() {
 
     socket.on('userTyping', handleUserTyping);
 
+    const handleError = (data: any) => {
+      toast.error(data.message);
+    };
+    socket.on('error', handleError);
+
     return () => {
       socket.off('userTyping', handleUserTyping);
+      socket.off('error', handleError);
     };
   }, [activeConversation?._id, socket, user.id]);
 

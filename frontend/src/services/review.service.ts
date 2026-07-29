@@ -1,8 +1,8 @@
 import axiosInstance from './axios.service.js';
 
-export const createReview = async (workerId, rating, comment) => {
+export const createReview = async (jobId: any, rating: any, comment: any) => {
   const response = await axiosInstance.post('/reviews', {
-    workerId,
+    jobId,
     rating,
     comment,
   });

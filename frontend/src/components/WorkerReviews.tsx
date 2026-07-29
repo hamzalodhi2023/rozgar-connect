@@ -2,52 +2,12 @@ import React from 'react';
 import StarRating from './StarRating';
 import { FiUser } from 'react-icons/fi';
 
-export default function WorkerReviews({
-  reviews, isSelf, handleReviewSubmit, rating, setRating, comment, setComment, submittingReview
-}: any) {
+export default function WorkerReviews({ reviews }: any) {
   return (
     <div className="bg-slate-900 border border-slate-800/60 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
       <h2 className="text-lg font-bold text-slate-205 border-b border-slate-800/60 pb-2">
         Customer Reviews ({reviews.length})
       </h2>
-
-      {/* Review form (Only for customers and if not self) */}
-      {!isSelf && (
-        <form onSubmit={handleReviewSubmit} className="space-y-4 bg-slate-950/40 border border-slate-800/50 p-4 rounded-2xl">
-          <h3 className="text-sm font-bold text-slate-200">
-            Rate this worker
-          </h3>
-
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-slate-500 font-semibold mr-2">Select Rating:</span>
-            <StarRating
-              rating={rating}
-              interactive={true}
-              onRatingChange={(newVal: any) => setRating(newVal)}
-              size={20}
-            />
-          </div>
-
-          <div>
-            <textarea
-              required
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Share your experience hiring this worker..."
-              className="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 focus:border-violet-550 rounded-xl text-sm font-medium text-slate-100 focus:outline-none transition-all resize-none"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={submittingReview}
-            className="px-5 py-2.5 bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow transition-all focus:outline-none disabled:opacity-50"
-          >
-            {submittingReview ? 'Submitting...' : 'Submit Review'}
-          </button>
-        </form>
-      )}
 
       {/* Reviews list */}
       <div className="space-y-4">

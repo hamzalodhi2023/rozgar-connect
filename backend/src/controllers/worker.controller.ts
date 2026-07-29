@@ -152,6 +152,9 @@ export const searchWorkers = async (req, res, next) => {
     const activeUsers = await User.find({ isActive: true }).select('_id');
     const activeUserIds = activeUsers.map(u => u._id);
     filter.userId = { $in: activeUserIds };
+    
+    // Only show verified workers
+    filter.verificationStatus = 'verified';
 
     let sort: any = {};
 

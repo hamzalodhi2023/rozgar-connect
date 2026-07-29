@@ -17,6 +17,15 @@ export default function NavbarDesktopDropdown({ user, setShowDropdown, logout, h
 
       <div className="p-1 space-y-0.5">
         <Link
+          to="/jobs"
+          onClick={() => setShowDropdown(false)}
+          className="flex items-center px-3 py-2 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-950/30 hover:text-violet-600 dark:hover:text-violet-400 rounded-xl transition-all"
+        >
+          <FiBriefcase className="mr-2.5 w-4 h-4 text-slate-400 dark:text-slate-500" />
+          My Jobs
+        </Link>
+
+        <Link
           to="/profile"
           onClick={() => setShowDropdown(false)}
           className="flex items-center px-3 py-2 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-950/30 hover:text-violet-600 dark:hover:text-violet-400 rounded-xl transition-all"
