@@ -33,7 +33,7 @@ const DEFAULT_CATEGORIES = [
   'photographer'
 ];
 
-import { getLocations } from '../services/location.service.js';
+import { searchLocationIQ } from '../services/locationiq.service.js';
 
 export default function SearchBar({ onSearch }) {
   const [categories, setCategories] = useState<string[]>([]);
@@ -60,20 +60,41 @@ export default function SearchBar({ onSearch }) {
         setCategories(DEFAULT_CATEGORIES);
       }
 
-      try {
-        const locResponse = await getLocations();
-        if (locResponse.success && locResponse.data.locations?.length > 0) {
-          const fetchedCities = locResponse.data.locations.filter((l: any) => l.type === 'city').map((l: any) => l.label);
-          const fetchedAreas = locResponse.data.locations.filter((l: any) => l.type === 'area').map((l: any) => l.label);
-          setDbCities(fetchedCities);
-          setDbAreas(fetchedAreas);
-        }
-      } catch (error) {
-        console.error('Failed to load locations', error);
-      }
     };
     fetchData();
   }, []);
+
+  // Debounced search for City
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (city && city.length >= 2) {
+        const results = await searchLocationIQ(city);
+        const cities = results.map((r: any) => {
+          return r.address?.city || r.address?.town || r.address?.village || r.address?.state_district || r.display_name;
+        }).filter(Boolean);
+        setDbCities(Array.from(new Set(cities)));
+      } else {
+        setDbCities([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [city]);
+
+  // Debounced search for Area
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (area && area.length >= 2) {
+        const results = await searchLocationIQ(`${area}, ${city || ''}`.trim());
+        const areas = results.map((r: any) => {
+          return r.address?.suburb || r.address?.neighbourhood || r.address?.residential || r.display_name;
+        }).filter(Boolean);
+        setDbAreas(Array.from(new Set(areas)));
+      } else {
+        setDbAreas([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [area, city]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -144,8 +165,8 @@ export default function SearchBar({ onSearch }) {
           {/* City Suggestions Dropdown */}
           {showCitySuggestions && (
             <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-slate-900 border border-slate-700 rounded-xl shadow-lg custom-scrollbar">
-              {dbCities.filter(c => c.toLowerCase().includes(city.toLowerCase())).length > 0 ? (
-                dbCities.filter(c => c.toLowerCase().includes(city.toLowerCase())).map((c) => (
+              {dbCities.length > 0 ? (
+                dbCities.map((c) => (
                   <li
                     key={c}
                     onMouseDown={(e) => {
@@ -159,7 +180,7 @@ export default function SearchBar({ onSearch }) {
                   </li>
                 ))
               ) : (
-                <li className="px-4 py-3 text-sm text-slate-500 text-center">No city found</li>
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">{city.length < 2 ? 'Type to search...' : 'No city found'}</li>
               )}
             </ul>
           )}
@@ -209,8 +230,8 @@ export default function SearchBar({ onSearch }) {
             {/* Area Suggestions Dropdown */}
             {showAreaSuggestions && (
               <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-slate-900 border border-slate-700 rounded-xl shadow-lg custom-scrollbar">
-                {dbAreas.filter(a => a.toLowerCase().includes(area.toLowerCase())).length > 0 ? (
-                  dbAreas.filter(a => a.toLowerCase().includes(area.toLowerCase())).map((a) => (
+                {dbAreas.length > 0 ? (
+                  dbAreas.map((a) => (
                     <li
                       key={a}
                       onMouseDown={(e) => {
@@ -224,7 +245,7 @@ export default function SearchBar({ onSearch }) {
                     </li>
                   ))
                 ) : (
-                  <li className="px-4 py-3 text-sm text-slate-500 text-center">No matching area</li>
+                  <li className="px-4 py-3 text-sm text-slate-500 text-center">{area.length < 2 ? 'Type to search...' : 'No matching area'}</li>
                 )}
               </ul>
             )}

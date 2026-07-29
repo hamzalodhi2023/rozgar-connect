@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiPhone, FiMapPin } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
-import { getLocations } from '../services/location.service.js';
+import { searchLocationIQ } from '../services/locationiq.service.js';
 import { getCategories } from '../services/category.service.js';
 import { useFormContext } from 'react-hook-form';
 const DEFAULT_CATEGORIES = [
@@ -48,17 +48,6 @@ export default function WorkerSetupFields({
         setDbCategories(DEFAULT_CATEGORIES);
       }
 
-      try {
-        const locResponse = await getLocations();
-        if (locResponse.success && locResponse.data.locations?.length > 0) {
-          const fetchedCities = locResponse.data.locations.filter((l: any) => l.type === 'city').map((l: any) => l.label);
-          const fetchedAreas = locResponse.data.locations.filter((l: any) => l.type === 'area').map((l: any) => l.label);
-          setDbCities(fetchedCities);
-          setDbAreas(fetchedAreas);
-        }
-      } catch (error) {
-        console.error('Failed to load locations', error);
-      }
     };
     fetchData();
 
@@ -75,6 +64,40 @@ export default function WorkerSetupFields({
       );
     }
   }, []);
+
+  // Debounced search for City
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (cityValue && cityValue.length >= 2) {
+        const results = await searchLocationIQ(cityValue);
+        // Extract display_name or address.city
+        const cities = results.map((r: any) => {
+          return r.address?.city || r.address?.town || r.address?.village || r.address?.state_district || r.display_name;
+        }).filter(Boolean);
+        // Deduplicate
+        setDbCities(Array.from(new Set(cities)));
+      } else {
+        setDbCities([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [cityValue]);
+
+  // Debounced search for Area
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (areaValue && areaValue.length >= 2) {
+        const results = await searchLocationIQ(`${areaValue}, ${cityValue || ''}`.trim());
+        const areas = results.map((r: any) => {
+          return r.address?.suburb || r.address?.neighbourhood || r.address?.residential || r.display_name;
+        }).filter(Boolean);
+        setDbAreas(Array.from(new Set(areas)));
+      } else {
+        setDbAreas([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [areaValue, cityValue]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -137,8 +160,8 @@ export default function WorkerSetupFields({
           />
           {showCitySuggestions && (
             <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
-              {dbCities.filter(c => c.toLowerCase().includes(cityValue.toLowerCase())).length > 0 ? (
-                dbCities.filter(c => c.toLowerCase().includes(cityValue.toLowerCase())).map((c) => (
+              {dbCities.length > 0 ? (
+                dbCities.map((c) => (
                   <li
                     key={c}
                     onMouseDown={(e) => {
@@ -153,7 +176,7 @@ export default function WorkerSetupFields({
                   </li>
                 ))
               ) : (
-                <li className="px-4 py-3 text-sm text-slate-500 text-center">No city found</li>
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">{cityValue.length < 2 ? 'Type to search...' : 'No city found'}</li>
               )}
             </ul>
           )}
@@ -188,8 +211,8 @@ export default function WorkerSetupFields({
           />
           {showAreaSuggestions && (
             <ul className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg custom-scrollbar">
-              {dbAreas.filter(a => a.toLowerCase().includes(areaValue.toLowerCase())).length > 0 ? (
-                dbAreas.filter(a => a.toLowerCase().includes(areaValue.toLowerCase())).map((a) => (
+              {dbAreas.length > 0 ? (
+                dbAreas.map((a) => (
                   <li
                     key={a}
                     onMouseDown={(e) => {
@@ -204,7 +227,7 @@ export default function WorkerSetupFields({
                   </li>
                 ))
               ) : (
-                <li className="px-4 py-3 text-sm text-slate-500 text-center">No matching area</li>
+                <li className="px-4 py-3 text-sm text-slate-500 text-center">{areaValue.length < 2 ? 'Type to search...' : 'No matching area'}</li>
               )}
             </ul>
           )}
