@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import { FiMessageSquare, FiX, FiSend, FiCpu, FiLoader } from 'react-icons/fi';
 import { sendAIMessage } from '../services/ai.service.js';
 
@@ -22,8 +21,6 @@ export default function RozgarAI() {
   const [isLoading, setIsLoading] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
-  const isDashboard = location.pathname.includes('dashboard');
 
   // Auto-scroll to bottom of conversation
   const scrollToBottom = () => {
@@ -73,8 +70,7 @@ export default function RozgarAI() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className={`fixed z-50 p-4 bg-linear-to-r from-violet-600 to-indigo-600 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer shadow-violet-500/20 ${isDashboard ? 'bottom-24 right-6' : 'bottom-6 right-6'
-            }`}
+          className={`fixed z-50 p-4 bg-linear-to-r from-violet-600 to-indigo-600 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer shadow-violet-500/20 bottom-24 right-6 md:bottom-6 md:right-6`}
           title="Chat with Rozgar AI"
         >
           <div className="relative">
