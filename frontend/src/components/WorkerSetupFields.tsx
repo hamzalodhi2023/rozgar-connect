@@ -61,6 +61,19 @@ export default function WorkerSetupFields({
       }
     };
     fetchData();
+
+    // Automatically ask for location permission on load
+    if (navigator.geolocation && !watch('latitude') && !watch('longitude')) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setValue('latitude', position.coords.latitude, { shouldValidate: true });
+          setValue('longitude', position.coords.longitude, { shouldValidate: true });
+        },
+        (error) => {
+          console.warn("Auto-location failed or denied:", error);
+        }
+      );
+    }
   }, []);
 
   return (
@@ -197,6 +210,56 @@ export default function WorkerSetupFields({
           )}
         </div>
         {errors.area && <p className="text-red-500 text-xs mt-1 ml-1">{errors.area?.message as string}</p>}
+      </div>
+
+      {/* GPS Location */}
+      <div className="md:col-span-2 mt-2 bg-slate-50/80 dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+              GPS Location <span className="text-red-500 ml-1">*</span>
+            </label>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Let customers see your exact location on a map to build trust and get nearby jobs. This is required.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                      setValue('latitude', position.coords.latitude, { shouldValidate: true });
+                      setValue('longitude', position.coords.longitude, { shouldValidate: true });
+                    },
+                    (error) => {
+                      console.error("Error getting location:", error);
+                      alert("Could not get your location. Please ensure location services are enabled.");
+                    }
+                  );
+                } else {
+                  alert("Geolocation is not supported by your browser.");
+                }
+              }}
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
+            >
+              <FiMapPin className="w-4 h-4" />
+              Get My Location
+            </button>
+            
+            {(watch('latitude') && watch('longitude')) && (
+              <span className="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Location Saved
+              </span>
+            )}
+          </div>
+        </div>
+        {errors.latitude && <p className="text-red-500 text-xs mt-2 ml-1">{errors.latitude?.message as string}</p>}
       </div>
 
       {/* Phone */}

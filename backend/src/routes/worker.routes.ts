@@ -70,6 +70,8 @@ const validateWorkerProfile = [
   body('phone').trim().notEmpty().withMessage('Phone number is required'),
   body('whatsapp').trim().notEmpty().withMessage('WhatsApp number is required'),
   body('description').trim().notEmpty().withMessage('Description is required'),
+  body('latitude').notEmpty().withMessage('GPS Location is required').isFloat().withMessage('Latitude must be a valid number'),
+  body('longitude').notEmpty().withMessage('GPS Location is required').isFloat().withMessage('Longitude must be a valid number'),
 ];
 
 router.get('/search', searchWorkers);
@@ -104,6 +106,8 @@ router.put(
     body('phone').optional().trim().notEmpty().withMessage('Phone number cannot be empty'),
     body('whatsapp').optional().trim().notEmpty().withMessage('WhatsApp number cannot be empty'),
     body('description').optional().trim().notEmpty().withMessage('Description cannot be empty'),
+    body('latitude').notEmpty().withMessage('GPS Location is required').isFloat().withMessage('Latitude must be a valid number'),
+    body('longitude').notEmpty().withMessage('GPS Location is required').isFloat().withMessage('Longitude must be a valid number'),
   ],
   handleValidation,
   updateWorkerProfile

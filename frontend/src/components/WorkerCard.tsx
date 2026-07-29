@@ -15,7 +15,8 @@ export default function WorkerCard({ worker }) {
   const isOnline = onlineUsers?.includes(workerUserId);
   
   const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  let backendUrl = import.meta.env.VITE_SOCKET_URL || `http://${HOST}:5000`;
+  if (backendUrl === '/') backendUrl = ''; // Fix double slash for proxy
   const photoUrl = photo ? (photo.startsWith('http') ? photo : `${backendUrl}${photo}`) : null;
 
   return (

@@ -79,6 +79,14 @@ const workerProfileSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    latitude: {
+      type: Number,
+      required: [true, 'Latitude is required'],
+    },
+    longitude: {
+      type: Number,
+      required: [true, 'Longitude is required'],
+    },
   },
   {
     timestamps: true,
