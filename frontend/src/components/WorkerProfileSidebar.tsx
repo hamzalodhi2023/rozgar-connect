@@ -1,7 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import { FiPhone, FiMapPin, FiMessageSquare } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { useSocket } from '../context/SocketContext';
+
+// Fix leaflet default icon issue
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+function UpdateMapCenter({ center }: { center: {lat: number, lng: number} }) {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo([center.lat, center.lng], map.getZoom(), { animate: true });
+  }, [center, map]);
+  return null;
+}
+
+function WorkerProfileMap({ worker }: { worker: any }) {
+  const socket = useSocket();
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number}>(
+    { lat: worker.latitude, lng: worker.longitude }
+  );
+
+  useEffect(() => {
+    if (!socket || !worker.userId) return;
+    
+    // worker.userId can be an object or a string depending on population
+    const workerId = worker.userId._id || worker.userId;
+    socket.emit('subscribeToLocation', workerId);
+
+    const handleLocationUpdate = (data: any) => {
+      if (data.workerId === workerId) {
+        setCurrentLocation({ lat: data.latitude, lng: data.longitude });
+      }
+    };
+
+    socket.on('workerLocationUpdate', handleLocationUpdate);
+
+    return () => {
+      socket.emit('unsubscribeFromLocation', workerId);
+      socket.off('workerLocationUpdate', handleLocationUpdate);
+    };
+  }, [socket, worker.userId]);
+
+  return (
+    <MapContainer 
+      center={[currentLocation.lat, currentLocation.lng]} 
+      zoom={14} 
+      className="w-full h-full relative z-0"
+      zoomControl={false}
+    >
+      <UpdateMapCenter center={currentLocation} />
+      <TileLayer
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+      />
+      <Marker position={[currentLocation.lat, currentLocation.lng]}>
+        <Popup>
+          <div className="text-center font-semibold text-xs">
+            Service Location<br />
+            <span className="text-xs text-green-600 font-bold tracking-wider uppercase mt-1 inline-block">● Live</span>
+          </div>
+        </Popup>
+      </Marker>
+    </MapContainer>
+  );
+}
 
 export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onlineUsers, isSelf, handleChatNow, openHireModal }: any) {
   return (
@@ -75,23 +151,16 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
           ))}
         </div>
 
-        <div className="mt-4 flex flex-col items-center justify-center text-sm text-slate-400">
-          <div className="flex items-center">
+        <div className="mt-4 flex flex-col items-center justify-center text-sm text-slate-400 w-full">
+          <div className="flex items-center mb-2">
             <FiMapPin className="w-4 h-4 mr-1 text-slate-500" />
             <span className="capitalize">{worker.area}, {worker.city}</span>
           </div>
+          
           {(worker.latitude && worker.longitude) && (
-            <a
-              href={`https://www.google.com/maps?q=${worker.latitude},${worker.longitude}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1.5 text-[11px] font-bold text-violet-500 hover:text-violet-400 hover:underline flex items-center gap-1 bg-violet-500/10 px-2 py-0.5 rounded-full"
-            >
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              View on Map
-            </a>
+            <div className="w-full h-40 rounded-xl overflow-hidden border border-slate-700/50 mt-2 relative z-0">
+              <WorkerProfileMap worker={worker} />
+            </div>
           )}
         </div>
 

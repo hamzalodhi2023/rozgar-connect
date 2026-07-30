@@ -27,12 +27,28 @@ export const getJobs = async (req: any, res: any, next: any) => {
   try {
     const userId = req.user.id;
     
-    const jobs = await Job.find({
+    let jobs: any = await Job.find({
       $or: [{ customerId: userId }, { workerId: userId }]
     })
       .populate('customerId', 'name email photo')
       .populate('workerId', 'name email photo')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); // Use lean to easily attach extra properties
+
+    // For each job where the current user is the customer, fetch the worker's profile
+    // (So the customer can see their contact details and location)
+    const { WorkerProfile } = await import('../models/WorkerProfile.js');
+    
+    jobs = await Promise.all(jobs.map(async (job: any) => {
+      // If the current user is the customer, attach worker details
+      if (job.customerId._id.toString() === userId.toString() && job.workerId) {
+        const profile = await WorkerProfile.findOne({ userId: job.workerId._id });
+        if (profile) {
+          job.workerProfile = profile;
+        }
+      }
+      return job;
+    }));
 
     return sendSuccess(res, 'Jobs retrieved successfully', { jobs });
   } catch (error) {

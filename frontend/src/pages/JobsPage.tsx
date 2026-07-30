@@ -5,6 +5,7 @@ import { RootState, AppDispatch } from '../redux/store';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 import { createReview } from '../services/review.service';
+import CustomerJobDetails from '../components/CustomerJobDetails';
 
 export default function JobsPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -85,50 +86,57 @@ export default function JobsPage() {
             const otherParty = role === 'customer' ? job.workerId : job.customerId;
 
             return (
-              <div key={job._id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg capitalize border ${
-                      job.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                      job.status === 'in-progress' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                      job.status === 'rejected' || job.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                      'bg-slate-800 text-slate-300 border-slate-700'
-                    }`}>
-                      Status: {job.status}
-                    </span>
-                    <span className="text-xs font-medium text-slate-500">
-                      {new Date(job.createdAt).toLocaleDateString()}
-                    </span>
+              <div key={job._id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col gap-4">
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-lg capitalize border ${
+                        job.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                        job.status === 'in-progress' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                        job.status === 'rejected' || job.status === 'cancelled' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                        'bg-slate-800 text-slate-300 border-slate-700'
+                      }`}>
+                        Status: {job.status}
+                      </span>
+                      <span className="text-xs font-medium text-slate-500">
+                        {new Date(job.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-200">
+                      {role === 'customer' ? `Job with Worker: ${otherParty?.name}` : `Job from Customer: ${otherParty?.name}`}
+                    </h3>
+                    <p className="text-sm text-slate-400 mt-2 whitespace-pre-wrap">{job.description}</p>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-200">
-                    {role === 'customer' ? `Job with Worker: ${otherParty?.name}` : `Job from Customer: ${otherParty?.name}`}
-                  </h3>
-                  <p className="text-sm text-slate-400 mt-2 whitespace-pre-wrap">{job.description}</p>
+                  
+                  <div className="flex flex-wrap gap-2 shrink-0">
+                    {role === 'worker' && job.status === 'pending' && (
+                      <>
+                        <button onClick={() => handleStatusUpdate(job._id, 'accepted')} className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-bold text-xs rounded-xl transition-all">Accept</button>
+                        <button onClick={() => handleStatusUpdate(job._id, 'rejected')} className="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 font-bold text-xs rounded-xl transition-all">Reject</button>
+                      </>
+                    )}
+                    {role === 'worker' && job.status === 'accepted' && (
+                      <button onClick={() => handleStatusUpdate(job._id, 'in-progress')} className="px-4 py-2 bg-violet-500/10 text-violet-400 border border-violet-500/20 hover:bg-violet-500/20 font-bold text-xs rounded-xl transition-all">Start Job</button>
+                    )}
+                    {role === 'worker' && job.status === 'in-progress' && (
+                      <button onClick={() => handleStatusUpdate(job._id, 'worker-completed')} className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 font-bold text-xs rounded-xl transition-all">Mark Completed</button>
+                    )}
+                    {role === 'customer' && job.status === 'worker-completed' && (
+                      <button onClick={() => handleStatusUpdate(job._id, 'completed')} className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-bold text-xs rounded-xl transition-all">Confirm Completion</button>
+                    )}
+                    {role === 'customer' && job.status === 'completed' && !job.isReviewed && (
+                      <button onClick={() => { setSelectedJob(job); setReviewModalOpen(true); }} className="px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 font-bold text-xs rounded-xl transition-all">Write Review</button>
+                    )}
+                  </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 shrink-0">
-                  {role === 'worker' && job.status === 'pending' && (
-                    <>
-                      <button onClick={() => handleStatusUpdate(job._id, 'accepted')} className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-bold text-xs rounded-xl transition-all">Accept</button>
-                      <button onClick={() => handleStatusUpdate(job._id, 'rejected')} className="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 font-bold text-xs rounded-xl transition-all">Reject</button>
-                    </>
-                  )}
-                  {role === 'worker' && job.status === 'accepted' && (
-                    <button onClick={() => handleStatusUpdate(job._id, 'in-progress')} className="px-4 py-2 bg-violet-500/10 text-violet-400 border border-violet-500/20 hover:bg-violet-500/20 font-bold text-xs rounded-xl transition-all">Start Job</button>
-                  )}
-                  {role === 'worker' && job.status === 'in-progress' && (
-                    <button onClick={() => handleStatusUpdate(job._id, 'worker-completed')} className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 font-bold text-xs rounded-xl transition-all">Mark Completed</button>
-                  )}
-                  {role === 'customer' && job.status === 'worker-completed' && (
-                    <button onClick={() => handleStatusUpdate(job._id, 'completed')} className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-bold text-xs rounded-xl transition-all">Confirm Completion</button>
-                  )}
-                  {role === 'customer' && job.status === 'completed' && !job.isReviewed && (
-                    <button onClick={() => { setSelectedJob(job); setReviewModalOpen(true); }} className="px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 font-bold text-xs rounded-xl transition-all">Write Review</button>
-                  )}
-                </div>
+                {/* Extra Details for Customer */}
+                {role === 'customer' && ['accepted', 'in-progress', 'worker-completed', 'completed'].includes(job.status) && (
+                  <CustomerJobDetails job={job} />
+                )}
               </div>
             );
-          })}
+        })}
         </div>
       )}
 

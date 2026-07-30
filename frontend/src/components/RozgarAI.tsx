@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FiMessageSquare, FiX, FiSend, FiCpu, FiLoader } from 'react-icons/fi';
 import { sendAIMessage } from '../services/ai.service.js';
 
@@ -9,6 +10,7 @@ interface Message {
 }
 
 export default function RozgarAI() {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -64,13 +66,16 @@ export default function RozgarAI() {
     setIsLoading(false);
   };
 
+  const isDashboardRoute = location.pathname.startsWith('/worker-dashboard') || location.pathname.startsWith('/admin-dashboard') || location.pathname.startsWith('/worker-setup');
+  const buttonBottomClass = isDashboardRoute ? 'bottom-24' : 'bottom-6';
+
   return (
     <div className="relative">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className={`fixed z-50 p-4 bg-linear-to-r from-violet-600 to-indigo-600 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer shadow-violet-500/20 bottom-24 right-6 md:bottom-6 md:right-6`}
+          className={`fixed z-50 p-4 bg-linear-to-r from-violet-600 to-indigo-600 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer shadow-violet-500/20 ${buttonBottomClass} right-6 md:bottom-6 md:right-6`}
           title="Chat with Rozgar AI"
         >
           <div className="relative">

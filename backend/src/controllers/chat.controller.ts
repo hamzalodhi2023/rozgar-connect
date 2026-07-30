@@ -1,7 +1,6 @@
 import { Conversation } from '../models/Conversation.js';
 import { Message } from '../models/Message.js';
 import { User } from '../models/User.js';
-import { Job } from '../models/Job.js';
 import { sendSuccess, sendError } from '../utils/response.utils.js';
 
 export const getConversations = async (req, res, next) => {
@@ -63,19 +62,6 @@ export const createConversation = async (req, res, next) => {
     const recipient = await User.findById(recipientId);
     if (!recipient) {
       return sendError(res, 'Recipient not found', 404);
-    }
-
-    // Check for an active or completed job between sender and recipient
-    const validJob = await Job.findOne({
-      $or: [
-        { customerId: senderId, workerId: recipientId },
-        { customerId: recipientId, workerId: senderId },
-      ],
-      status: { $in: ['accepted', 'in-progress', 'worker-completed', 'completed'] },
-    });
-
-    if (!validJob) {
-      return sendError(res, 'You can only start a chat if you have an active or completed job with this user.', 403);
     }
 
     // Check if conversation already exists between the two
