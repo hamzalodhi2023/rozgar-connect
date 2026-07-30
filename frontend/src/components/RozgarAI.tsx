@@ -122,8 +122,8 @@ export default function RozgarAI() {
                 >
                   <div
                     className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-xs ${isUser
-                        ? 'bg-violet-600 text-white rounded-br-none'
-                        : 'bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 border border-slate-150 dark:border-slate-850 rounded-bl-none'
+                      ? 'bg-violet-600 text-white rounded-br-none'
+                      : 'bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 border border-slate-150 dark:border-slate-850 rounded-bl-none'
                       }`}
                   >
                     <p className="whitespace-pre-line">{msg.text}</p>
