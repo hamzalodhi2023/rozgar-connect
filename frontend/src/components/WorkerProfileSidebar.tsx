@@ -103,6 +103,28 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
         <h1 className="text-xl font-extrabold text-slate-100 mt-4 leading-tight">
           {workerName}
         </h1>
+        
+        {/* Online Status / Last Seen */}
+        <div className="flex justify-center mt-1">
+          {(() => {
+            const isOnline = onlineUsers?.includes(worker?.userId?._id || worker?.userId);
+            const lastSeenDate = worker?.userId?.lastSeen;
+            
+            if (isOnline) {
+              return <span className="text-[10px] font-semibold text-emerald-400">Online Now</span>;
+            } else if (lastSeenDate) {
+              const diffInMinutes = Math.floor((new Date().getTime() - new Date(lastSeenDate).getTime()) / 60000);
+              let timeText = '';
+              if (diffInMinutes < 1) timeText = 'Just now';
+              else if (diffInMinutes < 60) timeText = `${diffInMinutes}m ago`;
+              else if (diffInMinutes < 1440) timeText = `${Math.floor(diffInMinutes / 60)}h ago`;
+              else timeText = `${Math.floor(diffInMinutes / 1440)}d ago`;
+              
+              return <span className="text-[10px] text-slate-400 font-medium">Last seen: {timeText}</span>;
+            }
+            return null;
+          })()}
+        </div>
         {worker.isVerified && (
           <div className="mt-2 flex justify-center">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -163,8 +185,7 @@ export default function WorkerProfileSidebar({ worker, workerName, photoUrl, onl
             </div>
           )}
         </div>
-
-        <div className="mt-4 flex flex-col items-center justify-center space-y-1">
+        <div className="mt-4 flex flex-col items-center justify-center text-sm text-slate-400 w-full">
           <div className="flex items-center space-x-1">
             <StarRating rating={worker.averageRating} size={18} />
             <span className="text-sm font-bold text-slate-205 ml-1">

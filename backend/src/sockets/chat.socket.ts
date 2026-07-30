@@ -178,13 +178,21 @@ export const setupChatSocket = (io) => {
       }
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       console.log(`Socket disconnected: User ${userId} (${socket.id})`);
       if (onlineUsers.has(userId)) {
         const sockets = onlineUsers.get(userId);
         sockets.delete(socket.id);
         if (sockets.size === 0) {
           onlineUsers.delete(userId);
+          
+          // Update lastSeen
+          try {
+            const { User } = await import('../models/User.js');
+            await User.findByIdAndUpdate(userId, { lastSeen: new Date() });
+          } catch (err) {
+            console.error('Failed to update lastSeen in DB:', err);
+          }
         }
       }
       // Broadcast updated list to all clients

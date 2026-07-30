@@ -116,7 +116,7 @@ export const updateWorkerProfile = async (req, res, next) => {
 export const getMyWorkerProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const profile = await WorkerProfile.findOne({ userId }).populate('userId', 'name email');
+    const profile = await WorkerProfile.findOne({ userId }).populate('userId', 'name email lastSeen');
     if (!profile) {
       return sendError(res, 'Worker profile not found', 404);
     }
@@ -129,7 +129,7 @@ export const getMyWorkerProfile = async (req, res, next) => {
 export const getWorkerProfileById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const profile = await WorkerProfile.findById(id).populate('userId', 'name email');
+    const profile = await WorkerProfile.findById(id).populate('userId', 'name email lastSeen');
     if (!profile) {
       return sendError(res, 'Worker profile not found', 404);
     }
@@ -176,7 +176,7 @@ export const searchWorkers = async (req, res, next) => {
     }
 
     const workers = await WorkerProfile.find(filter)
-      .populate('userId', 'name email')
+      .populate('userId', 'name email lastSeen')
       .sort(sort);
 
     return sendSuccess(res, 'Workers searched successfully', { workers });
