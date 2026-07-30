@@ -1,5 +1,8 @@
 import { WorkerProfile } from '../models/WorkerProfile.js';
 import { User } from '../models/User.js';
+import { Review } from '../models/Review.js';
+import { Conversation } from '../models/Conversation.js';
+import { Message } from '../models/Message.js';
 import { sendSuccess, sendError } from '../utils/response.utils.js';
 
 export const createWorkerProfile = async (req, res, next) => {
@@ -177,6 +180,42 @@ export const searchWorkers = async (req, res, next) => {
       .sort(sort);
 
     return sendSuccess(res, 'Workers searched successfully', { workers });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteMyWorkerProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // Find the worker profile
+    const profile = await WorkerProfile.findOne({ userId });
+    if (!profile) {
+      return sendError(res, 'Worker profile not found', 404);
+    }
+
+    // Delete associated reviews
+    await Review.deleteMany({ workerId: profile._id });
+
+    // Find and delete all conversations where user was the worker
+    const conversations = await Conversation.find({ workerId: userId });
+    const conversationIds = conversations.map(c => c._id);
+    
+    if (conversationIds.length > 0) {
+      await Message.deleteMany({ conversationId: { $in: conversationIds } });
+      await Conversation.deleteMany({ _id: { $in: conversationIds } });
+    }
+
+    // Delete the worker profile
+    await WorkerProfile.findByIdAndDelete(profile._id);
+
+    // Remove 'worker' role from user
+    await User.findByIdAndUpdate(userId, {
+      $pull: { roles: 'worker' }
+    });
+
+    return sendSuccess(res, 'Worker profile and associated data deleted successfully');
   } catch (error) {
     next(error);
   }

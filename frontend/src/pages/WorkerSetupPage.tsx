@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getMyWorkerProfile, createWorkerProfile, updateWorkerProfile } from '../services/worker.service.js';
-import { FiCheck } from 'react-icons/fi';
+import { getMyWorkerProfile, createWorkerProfile, updateWorkerProfile, deleteMyWorkerProfile } from '../services/worker.service.js';
+import { FiCheck, FiTrash2 } from 'react-icons/fi';
 import WorkerSetupPhotoUpload from '../components/WorkerSetupPhotoUpload';
 import WorkerSetupFields from '../components/WorkerSetupFields';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -26,6 +26,7 @@ export default function WorkerSetupPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
   const [photo, setPhoto] = useState(null);
@@ -157,6 +158,21 @@ export default function WorkerSetupPage() {
     }
   };
 
+  const handleDeleteProfile = async () => {
+    if (window.confirm("Are you absolutely sure you want to delete your Worker Profile? This will remove all your services, reviews, and customer chats. You will still keep your customer account.")) {
+      setIsDeleting(true);
+      try {
+        await deleteMyWorkerProfile();
+        toast.success('Your worker profile has been deleted successfully.');
+        window.location.href = '/profile'; // Reload app state to remove worker role
+      } catch (error: any) {
+        const msg = error.response?.data?.message || 'Failed to delete worker profile';
+        toast.error(msg);
+        setIsDeleting(false);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -243,6 +259,24 @@ export default function WorkerSetupPage() {
           </div>
         </form>
       </FormProvider>
+
+      {/* Delete Profile Section */}
+      {isEditMode && (
+        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 relative z-10">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Danger Zone</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            Deleting your worker profile will remove all your services, reviews, and customer chats. This action is irreversible. You will still keep your customer account.
+          </p>
+          <button
+            onClick={handleDeleteProfile}
+            disabled={isDeleting}
+            className="w-full sm:w-auto px-6 py-3 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white font-bold rounded-xl border border-red-500/20 hover:border-red-500 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-500/20 disabled:opacity-50 flex items-center justify-center gap-2 mx-auto sm:mx-0"
+          >
+            <FiTrash2 className="w-5 h-5" />
+            <span>{isDeleting ? 'Deleting...' : 'Delete Worker Profile'}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
