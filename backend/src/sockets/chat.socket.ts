@@ -132,6 +132,52 @@ export const setupChatSocket = (io) => {
       }
     });
 
+    // ----------------------------------------------------
+    // LIVE LOCATION TRACKING
+    // ----------------------------------------------------
+    socket.on('subscribeToLocation', (workerId) => {
+      const room = `location_${workerId}`;
+      socket.join(room);
+      console.log(`User ${userId} subscribed to location tracking for worker ${workerId}`);
+    });
+
+    socket.on('unsubscribeFromLocation', (workerId) => {
+      const room = `location_${workerId}`;
+      socket.leave(room);
+      console.log(`User ${userId} unsubscribed from location tracking for worker ${workerId}`);
+    });
+
+    socket.on('updateLocation', async (data) => {
+      const { latitude, longitude } = data;
+      
+      // Broadcast to anyone subscribed to this worker's location
+      io.to(`location_${userId}`).emit('workerLocationUpdate', {
+        workerId: userId,
+        latitude,
+        longitude,
+        timestamp: new Date()
+      });
+
+      // Throttle DB updates (save max once per minute)
+      try {
+        const now = Date.now();
+        const lastUpdate = (socket as any).lastLocationUpdate || 0;
+        if (now - lastUpdate > 60000) { // 60 seconds
+          (socket as any).lastLocationUpdate = now;
+          
+          // Using dynamic import or mongoose model if imported at top
+          // We'll require it inside to avoid circular deps if any, or just import it at top
+          const { WorkerProfile } = await import('../models/WorkerProfile.js');
+          await WorkerProfile.findOneAndUpdate(
+            { userId: userId },
+            { $set: { latitude, longitude } }
+          );
+        }
+      } catch (err) {
+        console.error('Failed to update worker location in DB:', err);
+      }
+    });
+
     socket.on('disconnect', () => {
       console.log(`Socket disconnected: User ${userId} (${socket.id})`);
       if (onlineUsers.has(userId)) {

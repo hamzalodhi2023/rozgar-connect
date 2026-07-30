@@ -247,7 +247,7 @@ export default function WorkerSetupFields({
             </p>
           </div>
           
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => {
@@ -266,16 +266,16 @@ export default function WorkerSetupFields({
                   alert("Geolocation is not supported by your browser.");
                 }
               }}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all flex items-center gap-2 whitespace-nowrap"
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto"
             >
               <FiMapPin className="w-4 h-4" />
               Get My Location
             </button>
             
             {(watch('latitude') && watch('longitude')) && (
-              <span className="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg flex items-center gap-1">
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-2.5 rounded-xl flex items-center justify-center gap-1.5 whitespace-nowrap border border-emerald-500/20 w-full sm:w-auto shadow-sm">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
                 Location Saved
               </span>

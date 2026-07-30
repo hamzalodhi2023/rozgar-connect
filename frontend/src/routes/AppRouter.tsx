@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { refreshUserToken } from '../services/auth.service.js';
 import { loginSuccess, setCheckingSession } from '../redux/slices/authSlice.js';
 import { RootState } from '../redux/store';
+import { useWorkerLocationTracker } from '../hooks/useWorkerLocationTracker';
 
 // Layouts
 import MainLayout from '../layouts/MainLayout';
@@ -37,6 +38,9 @@ import { ProtectedRoute, GuestRoute, RoleRoute } from './RouteGuards';
 export default function AppRouter() {
   const dispatch = useDispatch();
   const { checkingSession } = useSelector((state: RootState) => state.auth);
+
+  // Initialize live GPS tracking for workers
+  useWorkerLocationTracker();
 
   useEffect(() => {
     const restoreSession = async () => {
