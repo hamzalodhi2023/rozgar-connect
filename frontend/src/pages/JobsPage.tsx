@@ -17,6 +17,7 @@ export default function JobsPage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [jobTypeFilter, setJobTypeFilter] = useState<'all' | 'given' | 'received'>('all');
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -71,17 +72,61 @@ export default function JobsPage() {
     );
   }
 
+  const filteredJobs = jobs.filter(job => {
+    if (jobTypeFilter === 'all') return true;
+    const isCustomer = job.customerId._id === user?.id;
+    if (jobTypeFilter === 'given') return isCustomer;
+    if (jobTypeFilter === 'received') return !isCustomer;
+    return true;
+  });
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="text-3xl font-extrabold text-slate-100 mb-8">My Jobs</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <h1 className="text-3xl font-extrabold text-slate-100">My Jobs</h1>
+        
+        {/* Filter Buttons */}
+        <div className="flex bg-slate-800 p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
+          <button
+            onClick={() => setJobTypeFilter('all')}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+              jobTypeFilter === 'all' 
+                ? 'bg-slate-700 text-white shadow-sm' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+            }`}
+          >
+            All Jobs
+          </button>
+          <button
+            onClick={() => setJobTypeFilter('given')}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+              jobTypeFilter === 'given' 
+                ? 'bg-violet-600 text-white shadow-sm' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+            }`}
+          >
+            Jobs Given
+          </button>
+          <button
+            onClick={() => setJobTypeFilter('received')}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+              jobTypeFilter === 'received' 
+                ? 'bg-amber-500 text-white shadow-sm' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+            }`}
+          >
+            Jobs Received
+          </button>
+        </div>
+      </div>
       
-      {jobs.length === 0 ? (
+      {filteredJobs.length === 0 ? (
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-400">
-          No jobs found.
+          No jobs found for this filter.
         </div>
       ) : (
         <div className="space-y-6">
-          {jobs.map((job) => {
+          {filteredJobs.map((job) => {
             const role = job.customerId._id === user?.id ? 'customer' : 'worker';
             const otherParty = role === 'customer' ? job.workerId : job.customerId;
 
@@ -89,7 +134,14 @@ export default function JobsPage() {
               <div key={job._id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center flex-wrap gap-2 mb-2">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
+                        role === 'customer' 
+                          ? 'bg-violet-500/10 text-violet-400 border-violet-500/20' 
+                          : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                      }`}>
+                        {role === 'customer' ? 'Job Given (Hiring)' : 'Job Received (Working)'}
+                      </span>
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-lg capitalize border ${
                         job.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                         job.status === 'in-progress' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
