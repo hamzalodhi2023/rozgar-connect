@@ -9,6 +9,7 @@ import {
   getMyWorkerProfile,
   getWorkerProfileById,
   searchWorkers,
+  deleteMyWorkerProfile,
 } from '../controllers/worker.controller.js';
 import { requireAuth } from '../middlewares/auth.middleware.js';
 import { requireRoles } from '../middlewares/role.middleware.js';
@@ -112,5 +113,7 @@ router.put(
   handleValidation,
   updateWorkerProfile
 );
+
+router.delete('/me', requireAuth, requireRoles('worker'), deleteMyWorkerProfile);
 
 export default router;

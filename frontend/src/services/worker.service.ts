@@ -32,3 +32,8 @@ export const searchWorkers = async (params) => {
   const response = await axiosInstance.get('/workers/search', { params });
   return response.data;
 };
+
+export const deleteMyWorkerProfile = async () => {
+  const response = await axiosInstance.delete('/workers/me');
+  return response.data;
+};
