@@ -12,7 +12,6 @@ import {
   FiLayers,
   FiUsers,
   FiStar,
-  FiMapPin,
 } from 'react-icons/fi';
 
 export default function DashboardLayout() {
@@ -52,7 +51,6 @@ export default function DashboardLayout() {
     { name: 'Manage Workers', path: '/admin-dashboard/workers', icon: <FiBriefcase className="w-5 h-5" /> },
     { name: 'Manage Reviews', path: '/admin-dashboard/reviews', icon: <FiStar className="w-5 h-5" /> },
     { name: 'Manage Categories', path: '/admin-dashboard/categories', icon: <FiLayers className="w-5 h-5" /> },
-    { name: 'Manage Locations', path: '/admin-dashboard/locations', icon: <FiMapPin className="w-5 h-5" /> },
   ];
 
   const currentLinks = isAdmin ? adminLinks : workerLinks;

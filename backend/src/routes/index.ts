@@ -7,7 +7,6 @@ import chatRoutes from './chat.routes.js';
 import adminRoutes from './admin.routes.js';
 import categoryRoutes from './category.routes.js';
 import aiRoutes from './ai.routes.js';
-import locationRoutes from './location.routes.js';
 import jobRoutes from './job.routes.js';
 
 const router = express.Router();
@@ -20,7 +19,6 @@ router.use('/chat', chatRoutes);
 router.use('/admin', adminRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/ai', aiRoutes);
-router.use('/locations', locationRoutes);
 router.use('/jobs', jobRoutes);
 
 export default router;
